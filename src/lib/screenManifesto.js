@@ -1,19 +1,28 @@
-/** Daydream Ops — ekran amaçları (Design Manifesto) */
 export const SCREEN_INTRO = {
   dashboard: {
     chapter: 'Merkez',
     title: 'Bugün',
     purpose: 'Bugün ne yapacağım?',
   },
-  brief: {
-    chapter: 'Sabah',
+  today: {
+    chapter: 'Odak',
     title: 'Brief',
-    purpose: 'Bugün neye odaklanacağım?',
+    purpose: 'Günlük görevler ve serbest notlar.',
   },
   crm: {
     chapter: 'Portföy',
-    title: 'Müşteriler',
+    title: 'CRM',
     purpose: 'Müşterilerimin durumu ne?',
+  },
+  brands: {
+    chapter: 'Marka',
+    title: 'Markalar',
+    purpose: 'Marka hafızası ve proje arşivi.',
+  },
+  future: {
+    chapter: 'Pipeline',
+    title: 'Gelecek projeler',
+    purpose: 'Sırada ne var?',
   },
   tahsilat: {
     chapter: 'Finans',
@@ -21,13 +30,18 @@ export const SCREEN_INTRO = {
     purpose: 'Kim para ödemedi?',
   },
   teklif: {
-    chapter: 'Büyüme',
-    title: 'Teklif',
+    chapter: 'Teklif',
+    title: 'Proposal Atelier',
     purpose: 'Yeni işi nasıl satacağım?',
+  },
+  reports: {
+    chapter: 'Özet',
+    title: 'Raporlar',
+    purpose: 'Aylık yönetici özeti.',
   },
   settings: {
     chapter: 'Sistem',
     title: 'Ayarlar',
-    purpose: 'Merkez nasıl korunur?',
+    purpose: 'Güvenlik, veri ve bağlantılar.',
   },
 }

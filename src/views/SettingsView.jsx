@@ -5,13 +5,12 @@ import {
   setPassword,
   verifyPassword,
 } from '../lib/auth'
-import { INTEGRATIONS } from '../lib/constants'
-import { useOps } from '../lib/useOps'
+import ConnectionsPanel from '../components/ConnectionsPanel'
+import DataManagementSection from '../components/DataManagementSection'
 import PageHeader from '../components/PageHeader'
 import { SCREEN_INTRO } from '../lib/screenManifesto'
 
 export default function SettingsView() {
-  const { exportJson, resetAll } = useOps()
   const [current, setCurrent] = useState('')
   const [next, setNext] = useState('')
   const [confirm, setConfirm] = useState('')
@@ -42,34 +41,12 @@ export default function SettingsView() {
     setConfirm('')
   }
 
-  function handleExport() {
-    const json = exportJson()
-    const blob = new Blob([json], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `daydream-ops-export-${new Date().toISOString().slice(0, 10)}.json`
-    a.click()
-    URL.revokeObjectURL(url)
-  }
-
-  function handleReset() {
-    if (
-      confirm(
-        'Tüm müşteri, brief, teklif ve ödeme verileri silinip örnek veriye dönülecek. Emin misiniz?',
-      )
-    ) {
-      resetAll()
-      setMsg('Veriler sıfırlandı.')
-    }
-  }
-
   return (
-    <main className="page-main">
+    <main className="page-main page-main--settings">
       <PageHeader {...SCREEN_INTRO.settings} />
 
-      <section className="panel-premium section-gap max-w-editorial p-8 md:p-10">
-        <h2 className="label-premium">Şifre</h2>
+      <section className="settings-section panel-premium max-w-content p-6 md:p-8">
+        <h2 className="settings-section__title">Şifre ve güvenlik</h2>
         <form onSubmit={handlePasswordChange} className="mt-6 space-y-4">
           {hasPassword() && (
             <label className="block">
@@ -100,41 +77,24 @@ export default function SettingsView() {
               onChange={(e) => setConfirm(e.target.value)}
             />
           </label>
-          {msg && <p className="text-sm text-dim">{msg}</p>}
-          <button type="submit" className="btn-primary">
+          {msg && <p className="font-sans text-sm text-dim">{msg}</p>}
+          <button type="submit" className="btn-primary btn-primary-inline">
             Şifreyi güncelle
           </button>
         </form>
       </section>
 
-      <section className="panel-premium mt-6 max-w-lg p-6 md:p-8">
-        <h2 className="font-display text-lg font-semibold text-text">Veri</h2>
-        <div className="mt-6 flex flex-col gap-3">
-          <button type="button" onClick={handleExport} className="btn-ghost w-full text-left">
-            Tüm veriyi JSON olarak indir
-          </button>
-          <button
-            type="button"
-            onClick={handleReset}
-            className="btn-ghost w-full border-wine/30 text-left text-brand"
-          >
-            Tüm veriyi sıfırla (örnek veriye dön)
-          </button>
-        </div>
-      </section>
+      <DataManagementSection />
 
-      <section className="mt-10 max-w-lg">
-        <h2 className="font-display text-lg font-semibold text-text">
-          Entegrasyonlar
-        </h2>
-        <ul className="mt-4 space-y-2">
-          {Object.values(INTEGRATIONS).map((item) => (
-            <li key={item.label} className="integration-chip flex justify-between">
-              <span>{item.label}</span>
-              <span className="text-dim">{item.note}</span>
-            </li>
-          ))}
-        </ul>
+      <ConnectionsPanel />
+
+      <section className="settings-section max-w-content">
+        <h2 className="settings-section__title">Uygulama bilgisi</h2>
+        <p className="mt-4 font-sans text-sm leading-relaxed text-dim">
+          Daydream Production operasyon merkezi. Veriler yalnızca bu cihazda
+          saklanır.
+        </p>
+        <p className="member-copy mt-4">From Dream to Scene · v1</p>
       </section>
     </main>
   )

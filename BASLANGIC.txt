@@ -1,0 +1,42 @@
+DAYDREAM OPS — Bilgisayar açılınca (kısa liste)
+================================================
+
+TEK SEFER (ilk kurulum)
+-----------------------
+1. Bu klasörde dosya adı:  .env.local
+   (.env.example dosyasını kopyalayıp adını .env.local yapın)
+
+2. Yerel AI test için (anahtarı sohbete yapıştırmayın):
+
+   OPENAI_API_KEY=sk-proj-...buraya
+   OPENAI_MODEL=gpt-4o-mini
+
+3. Kaydedin (Ctrl+S)
+
+Canlı site (Vercel): OPENAI_API_KEY yalnızca Vercel Environment Variables içinde.
+
+
+HER GÜN / BİLGİSAYAR YENİDEN AÇILINCA
+-------------------------------------
+1. Cursor'da bu projeyi açın (DAYDREAM OPS klasörü)
+
+2. Terminal:
+
+   npm run dev
+
+3. Tarayıcı: http://localhost:5173
+
+4. Şifre → Merkez (Bugün) veya alt menüden AI / Brief / Finans
+
+
+DAYDREAM OPERATOR
+-----------------
+- Merkez ekranında üstte kart → Operatörü Aç
+- Mobilde sağ alttaki Operator FAB veya alt menü "AI"
+- Ayarlar → Entegrasyonlar → OpenAI bağlantısını test et
+
+
+SORUN OLURSA
+------------
+- .env değiştirdiyseniz: Ctrl+C → npm run dev tekrar
+- Canlıda AI çalışmıyorsa: Vercel → OPENAI_API_KEY kontrol → redeploy

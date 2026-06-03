@@ -1,8 +1,10 @@
 export const SERVICE_TYPES = [
-  'Social Management',
-  'Content Production',
+  'Sosyal Medya Retainer',
+  'İçerik Üretimi',
+  'Marka Filmi',
+  'Aylık İçerik Paketi',
+  'Lansman Projesi',
   'Growth System',
-  'Tek Seferlik',
 ]
 
 export const PAYMENT_STATUS = {
@@ -21,16 +23,60 @@ export const PAYMENT_STATUS_LABELS = {
 
 export const SCREENS = {
   DASHBOARD: 'dashboard',
-  BRIEF: 'brief',
+  TODAY: 'today',
   CRM: 'crm',
+  BRANDS: 'brands',
+  FUTURE: 'future',
   TAHSILAT: 'tahsilat',
   TEKLIF: 'teklif',
+  REPORTS: 'reports',
   SETTINGS: 'settings',
 }
 
-export const INTEGRATIONS = {
-  whatsapp: { label: 'WhatsApp', status: 'placeholder', note: 'Faz 2 — deep link' },
-  supabase: { label: 'Supabase', status: 'placeholder', note: 'Faz 2 — cloud sync' },
-  voice: { label: 'Sesli asistan', status: 'placeholder', note: 'Faz 2 — OpenAI Realtime' },
-  vercel: { label: 'Deploy', status: 'placeholder', note: 'Vercel + domain' },
+/** Entegrasyon durumları */
+export const INTEGRATION_STATUS = {
+  CONNECTED: 'Bağlı',
+  DISCONNECTED: 'Bağlı değil',
+  PREPARING: 'Hazırlanıyor',
 }
+
+/** Ayarlar > Bağlantılar */
+export const CONNECTION_MODULES = [
+  {
+    id: 'openai',
+    title: 'OpenAI',
+    status: INTEGRATION_STATUS.DISCONNECTED,
+    description:
+      'Daydream Operator — tahsilat, brief, teklif ve rapor analizi.',
+  },
+  {
+    id: 'drive',
+    title: 'Google Drive',
+    status: INTEGRATION_STATUS.PREPARING,
+    description: 'Teklif PDF’leri ve müşteri klasörleri.',
+  },
+  {
+    id: 'gmail',
+    title: 'Gmail',
+    status: INTEGRATION_STATUS.PREPARING,
+    description: 'Teklif ve tahsilat e-posta taslakları.',
+  },
+  {
+    id: 'calendar',
+    title: 'Google Calendar',
+    status: INTEGRATION_STATUS.PREPARING,
+    description: 'Toplantı ve teslim tarihleri.',
+  },
+  {
+    id: 'supabase',
+    title: 'Supabase',
+    status: INTEGRATION_STATUS.DISCONNECTED,
+    description: 'Bulut senkron ve yedek (planlanan).',
+  },
+  {
+    id: 'whatsapp',
+    title: 'WhatsApp',
+    status: INTEGRATION_STATUS.PREPARING,
+    description: 'Hatırlatma mesajlarını hızlı aktarım.',
+  },
+]

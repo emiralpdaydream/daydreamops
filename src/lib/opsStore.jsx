@@ -4,16 +4,37 @@ import { todayKey } from './dates'
 import { OpsContext } from './opsContext'
 import { generateProposalText } from './proposalGenerator'
 import {
+  archiveClient as archiveClientData,
+  clearBriefHistory,
+  clearPayments,
+  clearProposals,
+  countClientPayments,
+  createEmptyBrand,
+  createEmptyBrandProject,
   createEmptyClient,
+  createEmptyFutureProject,
   createEmptyProposal,
-  exportDataJson,
+  deleteClient as deleteClientData,
+  deleteClientPayments,
+  deletePayment as deletePaymentData,
+  exportAllData,
   loadData,
   purgeArchivedClients,
-  resetData,
+  resetAllData,
+  resetDemoData,
+  restoreClient as restoreClientData,
   saveData,
   syncPaymentStatuses,
+  updateClient as updateClientData,
+  updatePayment as updatePaymentData,
 } from './storage'
 import { createId } from './id'
+import {
+  addBriefTask as addBriefTaskData,
+  deleteBriefTask as deleteBriefTaskData,
+  setBriefNotes as setBriefNotesData,
+  toggleBriefTask as toggleBriefTaskData,
+} from './briefStorage'
 
 function prepare(data) {
   return syncPaymentStatuses(purgeArchivedClients({ ...data }))
@@ -33,47 +54,56 @@ export function OpsProvider({ children }) {
     setData(prepare(loadData()))
   }, [])
 
-  const saveTodayBrief = useCallback(
-    ({ priorities, note }) => {
-      const date = todayKey()
-      const next = { ...data }
-      const existing = next.briefs.findIndex((b) => b.date === date)
-      const entry = {
-        id: existing >= 0 ? next.briefs[existing].id : createId('brief'),
-        date,
-        priorities: priorities.slice(0, 3),
-        note: note ?? '',
-        created_at: new Date().toISOString(),
-      }
-      if (existing >= 0) next.briefs[existing] = entry
-      else next.briefs.unshift(entry)
-      return persist(next)
-    },
+  const addBriefTask = useCallback(
+    (text) => persist(addBriefTaskData(data, text)),
+    [data, persist],
+  )
+
+  const toggleBriefTask = useCallback(
+    (taskId) => persist(toggleBriefTaskData(data, taskId)),
+    [data, persist],
+  )
+
+  const deleteBriefTask = useCallback(
+    (taskId) => persist(deleteBriefTaskData(data, taskId)),
+    [data, persist],
+  )
+
+  const setBriefNotes = useCallback(
+    (notes) => persist(setBriefNotesData(data, notes)),
     [data, persist],
   )
 
   const upsertClient = useCallback(
     (client) => {
       const next = { ...data }
-      const idx = next.clients.findIndex((c) => c.id === client.id)
+      const normalized = {
+        ...client,
+        monthly_fee: Number(client.monthly_fee) || 0,
+        agreed_price: Number(client.agreed_price ?? client.monthly_fee) || 0,
+        email: client.email || client.contact || '',
+        isDemo: client.isDemo ?? false,
+      }
+      const idx = next.clients.findIndex((c) => c.id === normalized.id)
       if (idx >= 0) {
-        next.clients[idx] = client
-        const pay = next.payments.find((p) => p.client_id === client.id)
+        next.clients[idx] = normalized
+        const pay = next.payments.find((p) => p.client_id === normalized.id)
         if (pay) {
-          pay.amount = client.monthly_fee
-          pay.due_date = client.due_date
+          pay.amount = normalized.monthly_fee
+          pay.due_date = normalized.due_date
         }
       } else {
-        next.clients.push(client)
+        next.clients.push(normalized)
         next.payments.push({
           id: createId('pay'),
-          client_id: client.id,
-          amount: client.monthly_fee,
-          due_date: client.due_date,
+          client_id: normalized.id,
+          amount: normalized.monthly_fee,
+          due_date: normalized.due_date,
           paid_date: null,
-          status: client.payment_status || PAYMENT_STATUS.PENDING,
+          status: normalized.payment_status || PAYMENT_STATUS.PENDING,
           reminder_sent: false,
           label: 'Ödeme',
+          isDemo: false,
         })
       }
       return persist(next)
@@ -81,16 +111,87 @@ export function OpsProvider({ children }) {
     [data, persist],
   )
 
+  const updateClient = useCallback(
+    (id, patch) => persist(updateClientData(data, id, patch)),
+    [data, persist],
+  )
+
   const archiveClient = useCallback(
+    (clientId) => persist(archiveClientData(data, clientId)),
+    [data, persist],
+  )
+
+  const restoreClient = useCallback(
+    (clientId) => persist(restoreClientData(data, clientId)),
+    [data, persist],
+  )
+
+  const deleteClient = useCallback(
     (clientId) => {
-      const next = { ...data }
-      const c = next.clients.find((x) => x.id === clientId)
-      if (c) {
-        c.archived = true
-        c.archived_at = new Date().toISOString()
-      }
+      let next = deleteClientData(data, clientId)
+      next = deleteClientPayments(next, clientId)
       return persist(next)
     },
+    [data, persist],
+  )
+
+  const deleteClientOnly = useCallback(
+    (clientId) => persist(deleteClientData(data, clientId)),
+    [data, persist],
+  )
+
+  const getClientPaymentCount = useCallback(
+    (clientId) => countClientPayments(data, clientId),
+    [data],
+  )
+
+  const upsertBrand = useCallback(
+    (brand) => {
+      const next = { ...data }
+      const idx = next.brands.findIndex((b) => b.id === brand.id)
+      if (idx >= 0) next.brands[idx] = brand
+      else next.brands.unshift(brand)
+      return persist(next)
+    },
+    [data, persist],
+  )
+
+  const deleteBrand = useCallback(
+    (brandId) => {
+      const next = { ...data }
+      next.brands = next.brands.filter((b) => b.id !== brandId)
+      return persist(next)
+    },
+    [data, persist],
+  )
+
+  const upsertFutureProject = useCallback(
+    (project) => {
+      const next = { ...data }
+      const idx = next.future_projects.findIndex((p) => p.id === project.id)
+      if (idx >= 0) next.future_projects[idx] = project
+      else next.future_projects.unshift(project)
+      return persist(next)
+    },
+    [data, persist],
+  )
+
+  const deleteFutureProject = useCallback(
+    (projectId) => {
+      const next = { ...data }
+      next.future_projects = next.future_projects.filter((p) => p.id !== projectId)
+      return persist(next)
+    },
+    [data, persist],
+  )
+
+  const updatePayment = useCallback(
+    (id, patch) => persist(updatePaymentData(data, id, patch)),
+    [data, persist],
+  )
+
+  const deletePayment = useCallback(
+    (paymentId) => persist(deletePaymentData(data, paymentId)),
     [data, persist],
   )
 
@@ -120,11 +221,14 @@ export function OpsProvider({ children }) {
   const saveProposal = useCallback(
     (form) => {
       const next = { ...data }
-      const generated_text = generateProposalText(form)
+      const generated_text = form.generated_text?.trim()
+        ? form.generated_text.trim()
+        : generateProposalText(form)
       const entry = {
         ...form,
         id: form.id || createId('proposal'),
         generated_text,
+        isDemo: form.isDemo ?? false,
         created_at: form.created_at || new Date().toISOString(),
       }
       next.proposals.unshift(entry)
@@ -133,39 +237,95 @@ export function OpsProvider({ children }) {
     [data, persist],
   )
 
-  const exportJson = useCallback(() => exportDataJson(), [])
+  const exportJson = useCallback(() => exportAllData(), [])
 
   const resetAll = useCallback(() => {
-    const seed = resetData()
+    const seed = resetAllData()
     setData(prepare(seed))
+    return seed
   }, [])
+
+  const resetDemo = useCallback(() => {
+    return persist(resetDemoData(data))
+  }, [data, persist])
+
+  const clearPaymentsOnly = useCallback(() => {
+    return persist(clearPayments(data))
+  }, [data, persist])
+
+  const clearProposalsOnly = useCallback(() => {
+    return persist(clearProposals(data))
+  }, [data, persist])
+
+  const clearBriefsOnly = useCallback(() => {
+    return persist(clearBriefHistory(data))
+  }, [data, persist])
 
   const value = useMemo(
     () => ({
       data,
       refresh,
-      saveTodayBrief,
+      addBriefTask,
+      toggleBriefTask,
+      deleteBriefTask,
+      setBriefNotes,
       upsertClient,
+      updateClient,
       archiveClient,
+      restoreClient,
+      deleteClient,
+      deleteClientOnly,
+      getClientPaymentCount,
+      upsertBrand,
+      deleteBrand,
+      upsertFutureProject,
+      deleteFutureProject,
+      updatePayment,
+      deletePayment,
       markPaymentPaid,
       markReminderSent,
       saveProposal,
       exportJson,
       resetAll,
+      resetDemo,
+      clearPaymentsOnly,
+      clearProposalsOnly,
+      clearBriefsOnly,
       createEmptyClient,
       createEmptyProposal,
+      createEmptyBrand,
+      createEmptyBrandProject,
+      createEmptyFutureProject,
     }),
     [
       data,
       refresh,
-      saveTodayBrief,
+      addBriefTask,
+      toggleBriefTask,
+      deleteBriefTask,
+      setBriefNotes,
       upsertClient,
+      updateClient,
       archiveClient,
+      restoreClient,
+      deleteClient,
+      deleteClientOnly,
+      getClientPaymentCount,
+      upsertBrand,
+      deleteBrand,
+      upsertFutureProject,
+      deleteFutureProject,
+      updatePayment,
+      deletePayment,
       markPaymentPaid,
       markReminderSent,
       saveProposal,
       exportJson,
       resetAll,
+      resetDemo,
+      clearPaymentsOnly,
+      clearProposalsOnly,
+      clearBriefsOnly,
     ],
   )
 

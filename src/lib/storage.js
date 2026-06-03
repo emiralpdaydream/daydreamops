@@ -1,118 +1,26 @@
 import { createId } from './id'
 import { PAYMENT_STATUS } from './constants'
 import { daysFromToday, todayKey } from './dates'
-
+import { ensureBriefData } from './briefStorage'
+import {
+  applyLegacyClientName,
+  isLegacyDemoClientId,
+} from './legacyClientNames'
 import { STORAGE_KEYS } from './storageKeys'
 
 const DATA_KEY = STORAGE_KEYS.DATA
 const ARCHIVE_DAYS = 30
+const DATA_VERSION = 5
 
-function seedData() {
-  const hyperpower = {
-    id: 'client_hyperpower',
-    name: 'Hyperpower',
-    service_type: 'Content Production',
-    monthly_fee: 47000,
-    due_date: daysAgo(12),
-    payment_status: PAYMENT_STATUS.OVERDUE,
-    notes: 'Mart ödemesi gecikmiş',
-    contact: '',
-    archived: false,
-    created_at: isoNow(),
-  }
+/** Seed kayıtları — isDemo bayrağı ile temizlenir */
+const DEMO_CLIENT_IDS = new Set([
+  'client_a',
+  'client_b',
+  'client_c',
+  'client_d',
+])
 
-  const roberto = {
-    id: 'client_roberto',
-    name: 'Roberto Bravo',
-    service_type: 'Content Production',
-    monthly_fee: 85000,
-    due_date: daysAhead(24),
-    payment_status: PAYMENT_STATUS.PAID,
-    notes: 'Nisan tahsilatı tamamlandı',
-    contact: '',
-    archived: false,
-    created_at: isoNow(),
-  }
-
-  const eleventy = {
-    id: 'client_eleventy',
-    name: 'Eleventy',
-    service_type: 'Social Management',
-    monthly_fee: 32000,
-    due_date: daysAhead(5),
-    payment_status: PAYMENT_STATUS.PENDING,
-    notes: 'Teklif bekleniyor',
-    contact: '',
-    archived: false,
-    created_at: isoNow(),
-  }
-
-  const parkHyatt = {
-    id: 'client_parkhyatt',
-    name: 'Park Hyatt',
-    service_type: 'Tek Seferlik',
-    monthly_fee: 120000,
-    due_date: daysAhead(14),
-    payment_status: PAYMENT_STATUS.PENDING,
-    notes: '3 günlük çekim teklifi',
-    contact: '',
-    archived: false,
-    created_at: isoNow(),
-  }
-
-  const clients = [hyperpower, roberto, eleventy, parkHyatt]
-
-  const payments = [
-    {
-      id: 'pay_hyper_mart',
-      client_id: hyperpower.id,
-      amount: 47000,
-      due_date: hyperpower.due_date,
-      paid_date: null,
-      status: PAYMENT_STATUS.OVERDUE,
-      reminder_sent: false,
-      label: 'Mart ödemesi',
-    },
-    {
-      id: 'pay_roberto_apr',
-      client_id: roberto.id,
-      amount: 85000,
-      due_date: daysAgo(5),
-      paid_date: daysAgo(5),
-      status: PAYMENT_STATUS.PAID,
-      reminder_sent: false,
-      label: 'Nisan ödemesi',
-    },
-    {
-      id: 'pay_eleventy',
-      client_id: eleventy.id,
-      amount: 32000,
-      due_date: eleventy.due_date,
-      paid_date: null,
-      status: PAYMENT_STATUS.PENDING,
-      reminder_sent: false,
-      label: 'Nisan ödemesi',
-    },
-    {
-      id: 'pay_parkhyatt',
-      client_id: parkHyatt.id,
-      amount: 120000,
-      due_date: parkHyatt.due_date,
-      paid_date: null,
-      status: PAYMENT_STATUS.PENDING,
-      reminder_sent: false,
-      label: 'Proje avansı',
-    },
-  ]
-
-  return {
-    clients,
-    briefs: [],
-    proposals: [],
-    payments,
-    version: 1,
-  }
-}
+const DEMO_PAYMENT_IDS = new Set(['pay_a', 'pay_b', 'pay_c', 'pay_d'])
 
 function isoNow() {
   return new Date().toISOString()
@@ -130,6 +38,206 @@ function daysAhead(n) {
   return d.toISOString().slice(0, 10)
 }
 
+function enrichClient(c) {
+  return {
+    responsible: '',
+    accounting_contact: '',
+    creative_contact: '',
+    contact_person: '',
+    phone: '',
+    email: '',
+    agreed_price: c.monthly_fee ?? 0,
+    pitch_deck_notes: '',
+    archived: false,
+    archived_at: null,
+    isDemo: false,
+    ...c,
+    contact: c.contact ?? c.email ?? '',
+  }
+}
+
+function markDemoEntity(entity, idSet) {
+  if (entity.isDemo === true) return entity
+  if (idSet.has(entity.id) || isLegacyDemoClientId(entity.id)) {
+    return { ...entity, isDemo: true }
+  }
+  return entity
+}
+
+function emptyDataShape() {
+  const key = todayKey()
+  return {
+    clients: [],
+    payments: [],
+    proposals: [],
+    briefs: [],
+    brief: { date: key, tasks: [], notes: '' },
+    todos: [],
+    daily_note: { date: key, text: '' },
+    brands: [],
+    future_projects: [],
+    settings: {},
+    version: DATA_VERSION,
+  }
+}
+
+function normalizeData(parsed) {
+  const base = { ...emptyDataShape(), ...parsed }
+  base.clients = (base.clients ?? []).map((c) => {
+    const enriched = enrichClient(c)
+    enriched.name = applyLegacyClientName(enriched.name)
+    return markDemoEntity(enriched, DEMO_CLIENT_IDS)
+  })
+  base.payments = (base.payments ?? []).map((p) =>
+    markDemoEntity(
+      {
+        isDemo: false,
+        reminder_sent: false,
+        label: 'Ödeme',
+        ...p,
+      },
+      DEMO_PAYMENT_IDS,
+    ),
+  )
+  base.proposals = (base.proposals ?? []).map((p) => ({
+    isDemo: false,
+    ...p,
+  }))
+  base.briefs = (base.briefs ?? []).map((b) => ({
+    isDemo: false,
+    ...b,
+  }))
+  base.todos = base.todos ?? []
+  base.brands = base.brands ?? []
+  base.future_projects = base.future_projects ?? []
+  base.daily_note = base.daily_note ?? { date: todayKey(), text: '' }
+  base.settings = base.settings ?? {}
+  base.version = DATA_VERSION
+  return ensureBriefData(base)
+}
+
+function migrateData(parsed) {
+  return normalizeData(parsed)
+}
+
+function seedData() {
+  const clientA = enrichClient({
+    id: 'client_a',
+    name: 'Müşteri A',
+    service_type: 'İçerik Üretimi',
+    monthly_fee: 47000,
+    agreed_price: 47000,
+    due_date: daysAgo(12),
+    payment_status: PAYMENT_STATUS.OVERDUE,
+    notes: 'Açık kalem — gecikmiş ödeme',
+    isDemo: true,
+    created_at: isoNow(),
+  })
+
+  const clientB = enrichClient({
+    id: 'client_b',
+    name: 'Retainer Müşteri',
+    service_type: 'Marka Filmi',
+    monthly_fee: 85000,
+    agreed_price: 85000,
+    due_date: daysAgo(5),
+    paid_date: daysAgo(5),
+    payment_status: PAYMENT_STATUS.PAID,
+    notes: 'Tahsilat tamamlandı',
+    isDemo: true,
+    created_at: isoNow(),
+  })
+
+  const clientC = enrichClient({
+    id: 'client_c',
+    name: 'Müşteri C',
+    service_type: 'Sosyal Medya Retainer',
+    monthly_fee: 32000,
+    agreed_price: 32000,
+    due_date: daysAhead(5),
+    payment_status: PAYMENT_STATUS.PENDING,
+    notes: 'Bekleyen ödeme',
+    isDemo: true,
+    created_at: isoNow(),
+  })
+
+  const clientD = enrichClient({
+    id: 'client_d',
+    name: 'Müşteri D',
+    service_type: 'Lansman Projesi',
+    monthly_fee: 120000,
+    agreed_price: 120000,
+    due_date: daysAhead(14),
+    payment_status: PAYMENT_STATUS.PENDING,
+    notes: 'Yeni teklif aşaması',
+    isDemo: true,
+    created_at: isoNow(),
+  })
+
+  const clients = [clientA, clientB, clientC, clientD]
+
+  const payments = [
+    {
+      id: 'pay_a',
+      client_id: clientA.id,
+      amount: 47000,
+      due_date: clientA.due_date,
+      paid_date: null,
+      status: PAYMENT_STATUS.OVERDUE,
+      reminder_sent: false,
+      label: 'Açık kalem',
+      isDemo: true,
+    },
+    {
+      id: 'pay_b',
+      client_id: clientB.id,
+      amount: 85000,
+      due_date: daysAgo(5),
+      paid_date: daysAgo(5),
+      status: PAYMENT_STATUS.PAID,
+      reminder_sent: false,
+      label: 'Tahsil edildi',
+      isDemo: true,
+    },
+    {
+      id: 'pay_c',
+      client_id: clientC.id,
+      amount: 32000,
+      due_date: clientC.due_date,
+      paid_date: null,
+      status: PAYMENT_STATUS.PENDING,
+      reminder_sent: false,
+      label: 'Bekleyen Ödeme',
+      isDemo: true,
+    },
+    {
+      id: 'pay_d',
+      client_id: clientD.id,
+      amount: 120000,
+      due_date: clientD.due_date,
+      paid_date: null,
+      status: PAYMENT_STATUS.PENDING,
+      reminder_sent: false,
+      label: 'Proje avansı',
+      isDemo: true,
+    },
+  ]
+
+  const key = todayKey()
+  return normalizeData({
+    clients,
+    briefs: [],
+    brief: { date: key, tasks: [], notes: '' },
+    proposals: [],
+    payments,
+    todos: [],
+    daily_note: { date: key, text: '' },
+    brands: [],
+    future_projects: [],
+    settings: {},
+  })
+}
+
 function isValidData(parsed) {
   return (
     parsed &&
@@ -141,6 +249,7 @@ function isValidData(parsed) {
   )
 }
 
+/** Tüm state — tek giriş noktası (ileride async API) */
 export function loadData() {
   try {
     const raw = localStorage.getItem(DATA_KEY)
@@ -155,7 +264,18 @@ export function loadData() {
       saveData(seed)
       return seed
     }
-    return parsed
+    const migrated = migrateData(parsed)
+    const needsSave =
+      migrated.version !== parsed.version ||
+      (parsed.clients ?? []).some(
+        (c, i) =>
+          c.name !== migrated.clients[i]?.name ||
+          c.isDemo !== migrated.clients[i]?.isDemo,
+      )
+    if (needsSave) {
+      saveData(migrated)
+    }
+    return migrated
   } catch {
     const seed = seedData()
     saveData(seed)
@@ -164,17 +284,118 @@ export function loadData() {
 }
 
 export function saveData(data) {
-  localStorage.setItem(DATA_KEY, JSON.stringify(data))
+  const normalized = normalizeData(data)
+  localStorage.setItem(DATA_KEY, JSON.stringify(normalized))
+  return normalized
 }
 
-export function resetData() {
+export function exportAllData() {
+  return JSON.stringify(loadData(), null, 2)
+}
+
+/** @deprecated use exportAllData */
+export function exportDataJson() {
+  return exportAllData()
+}
+
+export function resetAllData() {
   const seed = seedData()
   saveData(seed)
   return seed
 }
 
-export function exportDataJson() {
-  return JSON.stringify(loadData(), null, 2)
+/** @deprecated use resetAllData */
+export function resetData() {
+  return resetAllData()
+}
+
+export function resetDemoData(data) {
+  const demoClientIds = new Set(
+    data.clients.filter((c) => c.isDemo).map((c) => c.id),
+  )
+  const next = {
+    ...data,
+    clients: data.clients.filter((c) => !c.isDemo),
+    payments: data.payments.filter(
+      (p) => !p.isDemo && !demoClientIds.has(p.client_id),
+    ),
+    proposals: (data.proposals ?? []).filter((p) => !p.isDemo),
+    briefs: (data.briefs ?? []).filter((b) => !b.isDemo),
+  }
+  return next
+}
+
+export function clearPayments(data) {
+  return { ...data, payments: [] }
+}
+
+export function clearProposals(data) {
+  return { ...data, proposals: [] }
+}
+
+export function clearBriefHistory(data) {
+  return { ...data, briefs: [] }
+}
+
+export function updateClient(data, id, patch) {
+  const next = { ...data }
+  const idx = next.clients.findIndex((c) => c.id === id)
+  if (idx < 0) return next
+  next.clients[idx] = enrichClient({ ...next.clients[idx], ...patch })
+  return next
+}
+
+export function deleteClient(data, clientId) {
+  return {
+    ...data,
+    clients: data.clients.filter((c) => c.id !== clientId),
+  }
+}
+
+export function archiveClient(data, clientId) {
+  const next = { ...data }
+  const c = next.clients.find((x) => x.id === clientId)
+  if (c) {
+    c.archived = true
+    c.archived_at = isoNow()
+  }
+  return next
+}
+
+export function restoreClient(data, clientId) {
+  const next = { ...data }
+  const c = next.clients.find((x) => x.id === clientId)
+  if (c) {
+    c.archived = false
+    c.archived_at = null
+  }
+  return next
+}
+
+export function deleteClientPayments(data, clientId) {
+  return {
+    ...data,
+    payments: data.payments.filter((p) => p.client_id !== clientId),
+  }
+}
+
+export function countClientPayments(data, clientId) {
+  return data.payments.filter((p) => p.client_id === clientId).length
+}
+
+export function updatePayment(data, id, patch) {
+  const next = { ...data }
+  const idx = next.payments.findIndex((p) => p.id === id)
+  if (idx < 0) return next
+  next.payments[idx] = { ...next.payments[idx], ...patch }
+  return next
+}
+
+export function deletePayment(data, paymentId) {
+  return {
+    ...data,
+    payments: data.payments.filter((p) => p.id !== paymentId),
+  }
 }
 
 export function syncPaymentStatuses(data) {
@@ -198,7 +419,7 @@ export function syncPaymentStatuses(data) {
       c.payment_status = PAYMENT_STATUS.OVERDUE
     } else if (open.length) {
       c.payment_status = open[0].status
-    } else {
+    } else if (clientPayments.length) {
       c.payment_status = PAYMENT_STATUS.PAID
     }
     const latest = open.sort((a, b) => a.due_date.localeCompare(b.due_date))[0]
@@ -218,16 +439,46 @@ export function purgeArchivedClients(data) {
 }
 
 export function createEmptyClient() {
-  return {
+  return enrichClient({
     id: createId('client'),
     name: '',
-    service_type: 'Content Production',
+    service_type: 'İçerik Üretimi',
     monthly_fee: 0,
     due_date: todayKey(),
     payment_status: PAYMENT_STATUS.PENDING,
     notes: '',
-    contact: '',
-    archived: false,
+    isDemo: false,
+    created_at: isoNow(),
+  })
+}
+
+export function createEmptyBrand() {
+  return {
+    id: createId('brand'),
+    name: '',
+    notes: '',
+    projects: [],
+    created_at: isoNow(),
+  }
+}
+
+export function createEmptyBrandProject() {
+  return {
+    id: createId('bproj'),
+    title: '',
+    description: '',
+    date: todayKey(),
+    created_at: isoNow(),
+  }
+}
+
+export function createEmptyFutureProject() {
+  return {
+    id: createId('fproj'),
+    title: '',
+    brand_name: '',
+    notes: '',
+    status: 'planning',
     created_at: isoNow(),
   }
 }
@@ -242,6 +493,7 @@ export function createEmptyProposal() {
     deliverables: [],
     notes: '',
     generated_text: '',
+    isDemo: false,
     created_at: isoNow(),
   }
 }

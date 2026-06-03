@@ -12,4 +12,5 @@ export const STORAGE_KEYS = {
 /** Oturum (sekme kapanınca silinir) — sessionStorage */
 export const SESSION_KEYS = {
   AUTH: 'daydream_ops_session',
+  SPLASH: 'daydream_ops_splash',
 }

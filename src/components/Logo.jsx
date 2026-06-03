@@ -1,37 +1,24 @@
-import logo from '../assets/daydream-logo.png'
+import { BRAND_ASSETS } from '../lib/brandAssets'
 
-/**
- * Premium logo — sessiz, küçük, bol boşluk.
- * Drop shadow, glow, 3D veya animasyon yok.
- */
+/** Logo — imza; beyaz kutu multiply ile kaybolur */
 export default function Logo({ variant = 'sm', className = '' }) {
-  const variants = {
-    xs: { shell: 'h-7 w-7 p-1', halo: false },
-    sm: { shell: 'h-8 w-8 p-1.5', halo: false },
-    sidebar: { shell: 'h-9 w-9 p-1.5', halo: false },
-    login: { shell: 'h-14 w-14 p-2.5', halo: true },
+  const sizes = {
+    xs: 'h-7 w-auto max-w-[5rem]',
+    sm: 'h-8 w-auto max-w-[5.5rem]',
+    sidebar: 'h-9 w-auto max-w-[6rem]',
+    login: 'h-11 w-auto max-w-[7.5rem]',
   }
 
-  const v = variants[variant] ?? variants.sm
+  const sizeClass = sizes[variant] ?? sizes.sm
 
-  const mark = (
-    <div
-      className={`logo-shell inline-flex shrink-0 items-center justify-center ${v.shell}`}
-    >
+  return (
+    <div className={`logo-mark inline-flex shrink-0 items-center ${className}`}>
       <img
-        src={logo}
+        src={BRAND_ASSETS.logo}
         alt="Daydream"
-        className="h-full w-full object-contain"
+        className={`logo-mark__img ${sizeClass}`}
         draggable={false}
       />
     </div>
   )
-
-  if (v.halo) {
-    return (
-      <div className={`logo-halo inline-flex ${className}`}>{mark}</div>
-    )
-  }
-
-  return <div className={`inline-flex ${className}`}>{mark}</div>
 }

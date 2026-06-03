@@ -2,7 +2,7 @@ import { NAV_GROUPS } from '../lib/navStructure'
 import { BRAND_TAGLINE } from '../lib/visualReferences'
 import Logo from './Logo'
 
-export default function AppSidebar({ screen, onNavigate }) {
+export default function AppSidebar({ screen, onNavigate, onOpenOperator }) {
   return (
     <aside className="sidebar-premium">
       <div className="sidebar-brand">
@@ -11,6 +11,16 @@ export default function AppSidebar({ screen, onNavigate }) {
       </div>
 
       <nav className="sidebar-nav">
+        <div className="nav-group">
+          <p className="nav-group-label">Operatör</p>
+          <button
+            type="button"
+            onClick={onOpenOperator}
+            className="nav-link nav-link-operator"
+          >
+            Daydream Operator
+          </button>
+        </div>
         {NAV_GROUPS.map((group) => (
           <div key={group.label} className="nav-group">
             <p className="nav-group-label">{group.label}</p>

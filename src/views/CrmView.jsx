@@ -2,17 +2,48 @@ import { useMemo, useState } from 'react'
 import { PAYMENT_STATUS } from '../lib/constants'
 import { formatTry } from '../lib/format'
 import { useOps } from '../lib/useOps'
+import { useToast } from '../lib/useToast'
 import { getActiveClients } from '../lib/selectors'
 import ClientModal from '../components/ClientModal'
+import ClientDeleteConfirmModal from '../components/ClientDeleteConfirmModal'
+import ClientDeleteModal from '../components/ClientDeleteModal'
+import EmptyStateBlock from '../components/EmptyStateBlock'
 import PageHeader from '../components/PageHeader'
 import { SCREEN_INTRO } from '../lib/screenManifesto'
 import StatusBadge from '../components/StatusBadge'
 
+function ClientActions({ onEdit, onDelete }) {
+  return (
+    <div className="action-row mt-4">
+      <button type="button" onClick={onEdit} className="action-chip">
+        Düzenle
+      </button>
+      <button
+        type="button"
+        onClick={onDelete}
+        className="action-chip action-chip--danger"
+      >
+        Sil
+      </button>
+    </div>
+  )
+}
+
 export default function CrmView() {
-  const { data, upsertClient, archiveClient, createEmptyClient } = useOps()
+  const {
+    data,
+    upsertClient,
+    archiveClient,
+    deleteClient,
+    getClientPaymentCount,
+    createEmptyClient,
+  } = useOps()
+  const { showToast } = useToast()
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [modalClient, setModalClient] = useState(null)
+  const [deleteTarget, setDeleteTarget] = useState(null)
+  const [confirmFullDelete, setConfirmFullDelete] = useState(false)
 
   const clients = useMemo(() => {
     let list = getActiveClients(data.clients)
@@ -33,7 +64,32 @@ export default function CrmView() {
   function handleSave(client) {
     upsertClient(client)
     setModalClient(null)
+    showToast('Veriler güncellendi.')
   }
+
+  function handleArchive() {
+    if (!deleteTarget) return
+    archiveClient(deleteTarget.id)
+    setDeleteTarget(null)
+    showToast('Müşteri arşive alındı.')
+  }
+
+  function handleFullDelete() {
+    if (!deleteTarget) return
+    setConfirmFullDelete(true)
+  }
+
+  function executeFullDelete() {
+    if (!deleteTarget) return
+    deleteClient(deleteTarget.id)
+    setDeleteTarget(null)
+    setConfirmFullDelete(false)
+    showToast('Müşteri ve bağlı kayıtlar silindi.')
+  }
+
+  const paymentCount = deleteTarget
+    ? getClientPaymentCount(deleteTarget.id)
+    : 0
 
   return (
     <main className="page-main">
@@ -41,13 +97,13 @@ export default function CrmView() {
 
       <div className="section-gap flex max-w-wide flex-col gap-4 sm:flex-row sm:items-center">
         <input
-          className="input-premium flex-1"
+          className="input-premium min-w-0 flex-1"
           placeholder="Ara…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
         <select
-          className="input-premium sm:w-44"
+          className="input-premium min-w-0 sm:w-44"
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
         >
@@ -68,7 +124,9 @@ export default function CrmView() {
 
       <ul className="mt-6 space-y-3 md:hidden">
         {clients.length === 0 ? (
-          <li className="text-sm text-muted">Müşteri bulunamadı.</li>
+          <li>
+            <EmptyStateBlock message="Henüz müşteri yok" variant="cinematic" />
+          </li>
         ) : (
           clients.map((c) => (
             <li key={c.id} className="panel-premium p-4">
@@ -82,92 +140,79 @@ export default function CrmView() {
                 </div>
                 <StatusBadge status={c.payment_status} />
               </div>
-              <div className="mt-4 flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => setModalClient({ ...c })}
-                  className="btn-ghost flex-1 text-xs"
-                >
-                  Düzenle
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (confirm(`${c.name} arşive alınsın mı?`)) {
-                      archiveClient(c.id)
-                    }
-                  }}
-                  className="btn-ghost text-xs text-muted"
-                >
-                  Sil
-                </button>
-              </div>
+              <ClientActions
+                onEdit={() => setModalClient({ ...c })}
+                onDelete={() => setDeleteTarget(c)}
+              />
             </li>
           ))
         )}
       </ul>
 
-      <div className="surface-card section-gap hidden overflow-x-auto p-6 md:block">
-        <table className="table-premium min-w-[640px]">
-          <thead>
-            <tr>
-              <th className="pr-4">İsim</th>
-              <th className="pr-4">Servis</th>
-              <th className="pr-4">Ücret</th>
-              <th className="pr-4">Durum</th>
-              <th />
-            </tr>
-          </thead>
-          <tbody>
-            {clients.length === 0 ? (
+      <div className="surface-card section-gap hidden md:block">
+        <div className="overflow-x-auto p-4 md:p-6">
+          <table className="table-premium w-full min-w-0">
+            <thead>
               <tr>
-                <td colSpan={5} className="py-8 text-center text-muted">
-                  Müşteri bulunamadı.
-                </td>
+                <th className="pr-4">İsim</th>
+                <th className="pr-4">Servis</th>
+                <th className="pr-4">Ücret</th>
+                <th className="pr-4">Durum</th>
+                <th />
               </tr>
-            ) : (
-              clients.map((c) => (
-                <tr key={c.id}>
-                  <td className="pr-4">
-                    <p className="font-medium text-text">{c.name}</p>
-                    {c.notes && (
-                      <p className="mt-0.5 max-w-xs truncate text-xs text-muted">
-                        {c.notes}
-                      </p>
-                    )}
-                  </td>
-                  <td className="pr-4">{c.service_type}</td>
-                  <td className="pr-4 font-mono text-text">
-                    {formatTry(c.monthly_fee)}
-                  </td>
-                  <td className="pr-4">
-                    <StatusBadge status={c.payment_status} />
-                  </td>
-                  <td className="text-right">
-                    <button
-                      type="button"
-                      onClick={() => setModalClient({ ...c })}
-                      className="btn-ghost text-xs"
-                    >
-                      Düzenle
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (confirm(`${c.name} arşive alınsın mı?`)) {
-                          archiveClient(c.id)
-                        }
-                      }}
-                      className="btn-ghost ml-1 text-xs text-muted"
-                    >
-                      Sil
-                    </button>
+            </thead>
+            <tbody>
+              {clients.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="py-8">
+                    <EmptyStateBlock
+                      message="Henüz müşteri yok"
+                      variant="cinematic"
+                    />
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                clients.map((c) => (
+                  <tr key={c.id}>
+                    <td className="pr-4">
+                      <p className="font-medium text-text">{c.name}</p>
+                      {c.notes && (
+                        <p className="mt-0.5 max-w-xs truncate text-xs text-muted">
+                          {c.notes}
+                        </p>
+                      )}
+                    </td>
+                    <td className="pr-4">{c.service_type}</td>
+                    <td className="pr-4 font-mono text-text">
+                      {formatTry(c.monthly_fee)}
+                    </td>
+                    <td className="pr-4">
+                      <StatusBadge status={c.payment_status} />
+                    </td>
+                    <td className="text-right">
+                      <div className="action-row action-row--inline justify-end">
+                        <button
+                          type="button"
+                          onClick={() => setModalClient({ ...c })}
+                          className="action-chip"
+                        >
+                          Düzenle
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setDeleteTarget(c)}
+                          className="action-chip action-chip--danger"
+                        >
+                          Sil
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {modalClient && (
@@ -177,6 +222,23 @@ export default function CrmView() {
           onClose={() => setModalClient(null)}
         />
       )}
+
+      <ClientDeleteModal
+        open={Boolean(deleteTarget) && !confirmFullDelete}
+        clientName={deleteTarget?.name}
+        paymentCount={paymentCount}
+        onArchive={handleArchive}
+        onDeleteAll={handleFullDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
+
+      <ClientDeleteConfirmModal
+        open={confirmFullDelete}
+        clientName={deleteTarget?.name}
+        paymentCount={paymentCount}
+        onConfirm={executeFullDelete}
+        onCancel={() => setConfirmFullDelete(false)}
+      />
     </main>
   )
 }

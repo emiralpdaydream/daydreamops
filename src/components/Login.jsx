@@ -5,10 +5,10 @@ import {
   setPassword,
   verifyPassword,
 } from '../lib/auth'
-import ClientRoster from './ClientRoster'
+import { AGENT_LABEL, BRAND_TAGLINE } from '../lib/visualReferences'
+import BrandBackdrop from './BrandBackdrop'
 import Logo from './Logo'
 import CinematicLayout from './CinematicLayout'
-import { BRAND_TAGLINE } from '../lib/visualReferences'
 
 export default function Login({ onSuccess }) {
   const [isSetup] = useState(() => !hasPassword())
@@ -51,20 +51,26 @@ export default function Login({ onSuccess }) {
   }
 
   return (
-    <CinematicLayout>
+    <CinematicLayout className="login-scene">
+      <BrandBackdrop variant="login" />
       <div className="login-frame animate-fade-in">
         <div className="login-mark">
           <Logo variant="login" />
         </div>
 
         <div className="login-editorial">
-          <p className="screen-chapter">Luxury Creative Operating System</p>
+          <p className="screen-chapter login-chapter">Luxury Creative Operating System</p>
+          <p className="mt-3 text-xs font-medium uppercase tracking-luxury text-muted">
+            {AGENT_LABEL}
+          </p>
           <h1 className="screen-title mt-4">Operasyon merkezi</h1>
           <p className="brand-whisper mt-6 text-center">{BRAND_TAGLINE}</p>
-          <p className="mx-auto mt-6 max-w-xs text-sm leading-relaxed text-dim">
-            Medya şirketinizi yönettiğiniz yer. Yazılım değil; kontrol.
+          <p className="mx-auto mt-6 max-w-xs font-sans text-sm leading-relaxed text-dim">
+            Daydream Production operasyon merkezi.
           </p>
-          <ClientRoster className="mt-10 text-center" />
+          <p className="member-copy mx-auto mt-4 max-w-xs text-center">
+            Yalnızca kurucu erişimi · Internal system
+          </p>
         </div>
 
         <div className="login-form-wrap">
@@ -110,11 +116,7 @@ export default function Login({ onSuccess }) {
               disabled={loading}
               className="btn-primary mt-10 disabled:opacity-50"
             >
-              {loading
-                ? '…'
-                : isSetup
-                  ? 'Merkeze gir'
-                  : 'Giriş'}
+              {loading ? '…' : isSetup ? 'Merkeze gir' : 'Giriş'}
             </button>
           </form>
 

@@ -38,7 +38,7 @@ export default function ReminderModal({ payment, clientName, onClose, onSent }) 
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-4 backdrop-blur-sm md:items-center"
+      className="fixed inset-0 z-50 flex w-full items-end justify-center overflow-hidden bg-black/60 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-sm md:items-center md:p-4"
       role="dialog"
       aria-modal="true"
     >
@@ -57,7 +57,7 @@ export default function ReminderModal({ payment, clientName, onClose, onSent }) 
           </button>
         </div>
 
-        <div className="mt-6 flex gap-2">
+        <div className="mt-6 flex max-w-full flex-wrap gap-2">
           {REMINDER_TONES.map((t) => (
             <button
               key={t.id}
@@ -81,10 +81,9 @@ export default function ReminderModal({ payment, clientName, onClose, onSent }) 
           className="input-premium mt-4 resize-y font-sans leading-relaxed"
         />
 
-        <div className="mt-4 rounded-btn border border-border/60 bg-elevated/50 px-3 py-2 text-xs text-muted">
-          WhatsApp entegrasyonu —{' '}
-          <span className="text-dim">placeholder (Faz 2)</span>
-        </div>
+        <p className="mt-4 font-sans text-xs text-muted">
+          WhatsApp&apos;a aktarım Faz 2&apos;de. Şimdilik metni kopyalayın.
+        </p>
 
         <div className="mt-6 flex flex-col gap-2 sm:flex-row">
           <button type="button" onClick={handleCopy} className="btn-primary sm:flex-1">
@@ -93,10 +92,9 @@ export default function ReminderModal({ payment, clientName, onClose, onSent }) 
           <button
             type="button"
             disabled
-            className="btn-ghost flex-1 cursor-not-allowed opacity-50"
-            title="Yakında"
+            className="btn-outline flex-1 cursor-not-allowed opacity-50"
           >
-            WhatsApp (yakında)
+            WhatsApp — hazırlık
           </button>
         </div>
       </div>

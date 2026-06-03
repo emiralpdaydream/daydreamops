@@ -7,11 +7,12 @@ import {
   getDashboardStats,
   getOverduePayments,
 } from '../lib/selectors'
-import ClientRoster from '../components/ClientRoster'
 import DataCell from '../components/DataCell'
 import FocusCard from '../components/FocusCard'
 import PageHeader from '../components/PageHeader'
 import ReminderModal from '../components/ReminderModal'
+import BrandBackdrop from '../components/BrandBackdrop'
+import OperatorDashboardCard from '../components/OperatorDashboardCard'
 
 const intro = SCREEN_INTRO.dashboard
 
@@ -28,42 +29,61 @@ export default function DashboardView({ onNavigate }) {
   })
 
   return (
-    <main className="page-main">
+    <main className="page-main page-main--dashboard">
+      <BrandBackdrop variant="dashboard" className="dashboard-hero-glow" />
       <PageHeader
         chapter={`${intro.chapter} · ${dateLabel}`}
         title={intro.title}
         purpose={intro.purpose}
       />
 
-      <ClientRoster className="mt-2" />
-
-      <div className="dashboard-grid section-gap">
+      <div className="dashboard-stagger section-gap">
+      <OperatorDashboardCard />
+      <div className="dashboard-grid">
         <FocusCard
-          title="Öncelik"
-          meta="Bugünün üç odak noktası"
+          title="Bugünkü görevler"
+          meta={
+            stats.briefTotal === 0
+              ? 'Brief boş'
+              : stats.briefOpen > 0
+                ? `${stats.briefOpen} açık · ${stats.briefSummary}`
+                : stats.briefSummary
+          }
           className="dashboard-focus"
         >
-          {stats.todayPriorities.length === 0 ? (
+          {stats.briefTotal === 0 ? (
             <div>
               <p className="font-display text-2xl font-medium italic text-dim">
-                Brief henüz yazılmadı.
+                Henüz görev eklenmedi.
               </p>
               <button
                 type="button"
-                onClick={() => onNavigate(SCREENS.BRIEF)}
+                onClick={() => onNavigate(SCREENS.TODAY)}
                 className="btn-ghost mt-8"
               >
-                Brief&apos;e git →
+                Brief →
+              </button>
+            </div>
+          ) : stats.todayBriefOpen.length === 0 ? (
+            <div>
+              <p className="font-display text-2xl font-medium text-text">
+                Tüm görevler tamamlandı
+              </p>
+              <p className="mt-2 text-sm text-dim">{stats.briefSummary}</p>
+              <button
+                type="button"
+                onClick={() => onNavigate(SCREENS.TODAY)}
+                className="btn-ghost mt-8"
+              >
+                Brief →
               </button>
             </div>
           ) : (
             <ol>
-              {stats.todayPriorities.map((item, i) => (
+              {stats.todayBriefOpen.map((item, i) => (
                 <li key={item.id} className="priority-line">
-                  <span className="priority-index">
-                    {['I', 'II', 'III'][i]}
-                  </span>
-                  <span className="text-[15px] leading-relaxed text-text">
+                  <span className="priority-index">{i + 1}.</span>
+                  <span className="min-w-0 flex-1 text-[15px] leading-relaxed text-text">
                     {item.text}
                   </span>
                 </li>
@@ -89,14 +109,14 @@ export default function DashboardView({ onNavigate }) {
                         {item.daysLate} gün gecikmiş
                       </p>
                     </div>
-                    <div className="flex items-center gap-5">
+                    <div className="flex w-full min-w-0 flex-wrap items-center justify-between gap-2 sm:w-auto sm:justify-end sm:gap-4">
                       <p className="font-display text-lg font-medium tabular-nums">
                         {formatTry(item.amount)}
                       </p>
                       <button
                         type="button"
                         onClick={() => setReminder(item)}
-                        className="btn-ghost"
+                        className="btn-ghost shrink-0"
                       >
                         Hatırlat
                       </button>
@@ -130,19 +150,40 @@ export default function DashboardView({ onNavigate }) {
                 label="Bekleyen"
                 value={formatTry(stats.pendingAmount)}
               />
-              <DataCell
-                label="Brief"
-                value={`${stats.briefDone}/${stats.briefTotal}`}
-                hint={stats.briefDone === 0 ? 'Yazılmadı' : 'Tamam'}
-              />
+          <DataCell
+            label="Brief"
+            value={
+              stats.briefTotal > 0
+                ? `${stats.briefDone}/${stats.briefTotal}`
+                : '—'
+            }
+            hint={
+              stats.briefTotal > 0 ? stats.briefSummary : 'Görev ekleyin'
+            }
+          />
             </div>
           </div>
         </div>
       </div>
 
-      <p className="integration-chip">
-        Faz 2 — sesli asistan. Merkez şimdilik sessiz ve odaklı kalır.
-      </p>
+      <div className="quick-actions">
+        <button
+          type="button"
+          onClick={() => onNavigate(SCREENS.TEKLIF)}
+          className="btn-outline"
+        >
+          Teklif
+        </button>
+        <button
+          type="button"
+          onClick={() => onNavigate(SCREENS.REPORTS)}
+          className="btn-outline"
+        >
+          Raporlar
+        </button>
+      </div>
+
+      </div>
 
       {reminder && (
         <ReminderModal

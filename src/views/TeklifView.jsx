@@ -56,23 +56,29 @@ export default function TeklifView() {
     <main className="page-main">
       <PageHeader {...SCREEN_INTRO.teklif} />
 
+      <p className="mt-2 max-w-editorial font-sans text-sm text-dim">
+        Briefing masası — formu doldurun, sağda teklif belgesi önizlemesi oluşur.
+      </p>
+
       {savedMsg && (
-        <p className="section-gap text-sm text-dim" role="status">
+        <p className="section-gap font-sans text-sm text-dim" role="status">
           {savedMsg}
         </p>
       )}
 
-      <div className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
+      <div className="section-gap grid w-full max-w-full grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
         <form
-          className="panel-premium space-y-4 p-6 md:p-8"
+          className="panel-premium min-w-0 space-y-4 p-5 md:p-7"
           onSubmit={(e) => e.preventDefault()}
         >
+          <h2 className="label-premium">Briefing</h2>
           <label className="block">
             <span className="label-premium">Müşteri</span>
             <input
               className="input-premium mt-2"
               value={form.client_name}
               onChange={(e) => update('client_name', e.target.value)}
+              placeholder="Müşteri veya proje adı"
             />
           </label>
           <label className="block">
@@ -102,11 +108,12 @@ export default function TeklifView() {
             />
           </label>
           <label className="block">
-            <span className="label-premium">Teslimatlar (satır satır)</span>
+            <span className="label-premium">Teslimatlar</span>
             <textarea
               className="input-premium mt-2 min-h-[100px]"
               value={form.deliverables}
               onChange={(e) => update('deliverables', e.target.value)}
+              placeholder="Her satır bir teslimat"
             />
           </label>
           <label className="block">
@@ -118,28 +125,33 @@ export default function TeklifView() {
             />
           </label>
           <div className="flex flex-col gap-2 pt-2 sm:flex-row">
-            <button type="button" onClick={handlePreview} className="btn-primary flex-1">
+            <button
+              type="button"
+              onClick={handlePreview}
+              className="btn-primary btn-primary-inline flex-1"
+            >
               Önizle
             </button>
-            <button type="button" onClick={handleSave} className="btn-ghost flex-1">
+            <button type="button" onClick={handleSave} className="btn-outline flex-1">
               Kaydet
             </button>
           </div>
-          <p className="integration-chip text-center">
-            PDF indir · E-posta gönder — placeholder (Faz 2)
-          </p>
+          <div className="disabled-action-card">
+            PDF ve e-posta gönderimi Faz 2&apos;de açılacak. Drive&apos;a kayıt
+            Ayarlar &gt; Bağlantılar üzerinden gelecek.
+          </div>
         </form>
 
-        <div className="panel-premium flex flex-col p-6 md:p-8">
-          <h2 className="font-display text-lg font-semibold text-text">Önizleme</h2>
-          <pre className="mt-4 flex-1 whitespace-pre-wrap font-sans text-sm leading-relaxed text-dim">
-            {preview || 'Önizle butonuna basın.'}
+        <div className="panel-premium flex min-w-0 flex-col p-5 md:p-7">
+          <h2 className="label-premium">Belge önizleme</h2>
+          <pre className="proposal-preview mt-4 flex-1">
+            {preview || 'Önizle ile belgeyi oluşturun.'}
           </pre>
           <button
             type="button"
             onClick={handleCopy}
             disabled={!preview}
-            className="btn-primary mt-6 disabled:opacity-40"
+            className="btn-primary btn-primary-inline mt-6 disabled:opacity-40"
           >
             {copied ? 'Kopyalandı' : 'Metni kopyala'}
           </button>

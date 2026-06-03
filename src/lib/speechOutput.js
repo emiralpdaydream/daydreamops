@@ -1,4 +1,27 @@
+/**
+ * Ses çıkışı — tarayıcı SpeechSynthesis (ElevenLabs için soyutlama noktası).
+ * iOS: voiceschanged + kullanıcı dokunuşu ile unlock gerekir.
+ */
+
 const STORAGE_VOICE = 'daydream_operator_voice_reply'
+
+let cachedVoices = []
+let voicesListenerAttached = false
+/** Oturum içi — localStorage'a yazılmaz (iOS reload sonrası yeniden unlock gerekir) */
+let speechUnlocked = false
+
+function requiresSpeechUnlock() {
+  if (typeof navigator === 'undefined') return false
+  const ua = navigator.userAgent
+  return (
+    /iPad|iPhone|iPod/.test(ua) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+  )
+}
+
+export function isSpeechSynthesisSupported() {
+  return typeof window !== 'undefined' && 'speechSynthesis' in window
+}
 
 export function isVoiceReplyEnabled() {
   try {
@@ -16,54 +39,159 @@ export function setVoiceReplyEnabled(on) {
   }
 }
 
+export function isSpeechUnlocked() {
+  return speechUnlocked
+}
+
+export function isSpeechUnlockRequired() {
+  return requiresSpeechUnlock()
+}
+
+/** Ses listesini yükle — modül ve Operator mount'ta çağır */
+export function initSpeechVoices() {
+  if (!isSpeechSynthesisSupported()) return
+
+  const loadVoices = () => {
+    try {
+      cachedVoices = window.speechSynthesis.getVoices() || []
+    } catch {
+      cachedVoices = []
+    }
+  }
+
+  loadVoices()
+
+  if (!voicesListenerAttached) {
+    voicesListenerAttached = true
+    window.speechSynthesis.addEventListener('voiceschanged', loadVoices)
+    window.speechSynthesis.onvoiceschanged = loadVoices
+  }
+
+  if (!requiresSpeechUnlock()) {
+    speechUnlocked = true
+  }
+}
+
+function pickTurkishVoice() {
+  if (!isSpeechSynthesisSupported()) return null
+  const voices = cachedVoices.length
+    ? cachedVoices
+    : window.speechSynthesis.getVoices() || []
+  return (
+    voices.find((v) => v.lang?.toLowerCase() === 'tr-tr') ||
+    voices.find((v) => v.lang?.toLowerCase().startsWith('tr')) ||
+    null
+  )
+}
+
+function applyUtteranceOptions(utter) {
+  utter.lang = 'tr-TR'
+  utter.rate = 0.92
+  utter.pitch = 0.95
+  utter.volume = 1
+  const trVoice = pickTurkishVoice()
+  if (trVoice) utter.voice = trVoice
+}
+
 export function stopSpeaking() {
-  if (typeof window === 'undefined' || !window.speechSynthesis) return
-  window.speechSynthesis.cancel()
+  if (!isSpeechSynthesisSupported()) return
+  try {
+    window.speechSynthesis.cancel()
+  } catch {
+    /* ignore */
+  }
 }
 
 export function isSpeaking() {
   return (
-    typeof window !== 'undefined' &&
-    window.speechSynthesis?.speaking === true
+    isSpeechSynthesisSupported() && window.speechSynthesis.speaking === true
   )
 }
 
 /**
- * Ses katmanı soyutlaması — ileride ElevenLabs buraya bağlanabilir.
  * @param {string} text
- * @param {{ onStart?: () => void, onEnd?: () => void }} hooks
+ * @param {{ onStart?: () => void, onEnd?: () => void, onError?: () => void, onBlocked?: () => void }} hooks
+ * @returns {boolean} konuşma başlatıldı mı
  */
-export function speak(text, hooks = {}) {
-  stopSpeaking()
+function speakInternal(text, hooks = {}) {
   const trimmed = String(text ?? '').trim()
   if (!trimmed) {
     hooks.onEnd?.()
-    return
+    return false
   }
 
-  if (typeof window === 'undefined' || !window.speechSynthesis) {
-    hooks.onEnd?.()
-    return
+  if (!isSpeechSynthesisSupported()) {
+    hooks.onBlocked?.()
+    return false
   }
 
-  const utter = new SpeechSynthesisUtterance(trimmed)
-  utter.lang = 'tr-TR'
-  utter.rate = 0.95
-  utter.pitch = 1
+  if (!speechUnlocked) {
+    hooks.onBlocked?.()
+    return false
+  }
 
-  const voices = window.speechSynthesis.getVoices()
-  const tr =
-    voices.find((v) => v.lang === 'tr-TR') ||
-    voices.find((v) => v.lang.startsWith('tr'))
-  if (tr) utter.voice = tr
+  stopSpeaking()
 
-  utter.onstart = () => hooks.onStart?.()
-  utter.onend = () => hooks.onEnd?.()
-  utter.onerror = () => hooks.onEnd?.()
+  const runSpeak = () => {
+    try {
+      if (window.speechSynthesis.paused) {
+        window.speechSynthesis.resume()
+      }
 
-  window.speechSynthesis.speak(utter)
+      const utter = new SpeechSynthesisUtterance(trimmed)
+      applyUtteranceOptions(utter)
+
+      utter.onstart = () => hooks.onStart?.()
+      utter.onend = () => hooks.onEnd?.()
+      utter.onerror = () => {
+        hooks.onError?.()
+        hooks.onEnd?.()
+      }
+
+      window.speechSynthesis.speak(utter)
+      return true
+    } catch {
+      hooks.onError?.()
+      hooks.onEnd?.()
+      return false
+    }
+  }
+
+  if (requiresSpeechUnlock()) {
+    window.setTimeout(runSpeak, 50)
+  } else {
+    runSpeak()
+  }
+
+  return true
 }
 
-export function isSpeechSynthesisSupported() {
-  return typeof window !== 'undefined' && 'speechSynthesis' in window
+/**
+ * Kullanıcı dokunuşu (Sesi Hazırla) — iOS speech engine unlock.
+ * @returns {boolean}
+ */
+export function unlockSpeech(text = 'Daydream Operator hazır.', hooks = {}) {
+  if (!isSpeechSynthesisSupported()) {
+    hooks.onBlocked?.()
+    return false
+  }
+
+  speechUnlocked = true
+
+  return speakInternal(text, {
+    onStart: () => hooks.onStart?.(),
+    onEnd: () => hooks.onEnd?.(),
+    onError: () => hooks.onError?.(),
+    onBlocked: () => hooks.onBlocked?.(),
+  })
+}
+
+/** AI yanıtını seslendir */
+export function speak(text, hooks = {}) {
+  return speakInternal(text, hooks)
+}
+
+/** @deprecated unlockSpeech kullanın */
+export function prepareSpeech(text, hooks) {
+  return unlockSpeech(text, hooks)
 }

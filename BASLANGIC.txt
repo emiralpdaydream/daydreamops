@@ -6,14 +6,15 @@ TEK SEFER (ilk kurulum)
 1. Bu klasörde dosya adı:  .env.local
    (.env.example dosyasını kopyalayıp adını .env.local yapın)
 
-2. Yerel AI test için (anahtarı sohbete yapıştırmayın):
+2. Yerel AI test için (anahtarı sohbete yapıştırmayın) — birini yeter:
 
-   OPENAI_API_KEY=sk-proj-...buraya
-   OPENAI_MODEL=gpt-4o-mini
+   OPENAI_API_KEY=sk-proj-...   (OpenAI)
+   veya
+   GOOGLE_API_KEY=...           (Google Gemini / AI Studio)
 
 3. Kaydedin (Ctrl+S)
 
-Canlı site (Vercel): OPENAI_API_KEY yalnızca Vercel Environment Variables içinde.
+Canlı site (Vercel): aynı isimlerle Environment Variables → sonra Redeploy.
 
 
 HER GÜN / BİLGİSAYAR YENİDEN AÇILINCA
@@ -33,10 +34,11 @@ DAYDREAM OPERATOR
 -----------------
 - Merkez ekranında üstte kart → Operatörü Aç
 - Mobilde sağ alttaki Operator FAB veya alt menü "AI"
-- Ayarlar → Entegrasyonlar → OpenAI bağlantısını test et
+- Ayarlar → Bağlantılar Merkezi → OpenAI "Bağlantıyı Test Et"
 
 
 SORUN OLURSA
 ------------
 - .env değiştirdiyseniz: Ctrl+C → npm run dev tekrar
-- Canlıda AI çalışmıyorsa: Vercel → OPENAI_API_KEY kontrol → redeploy
+- Canlıda AI: Vercel → OPENAI_API_KEY → redeploy
+- Google Drive/Gmail (sonraki faz): GOOGLE_CLIENT_ID + GOOGLE_CLIENT_SECRET

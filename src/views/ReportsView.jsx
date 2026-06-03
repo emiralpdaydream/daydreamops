@@ -4,6 +4,7 @@ import { getExecutiveReport } from '../lib/reportSelectors'
 import { SCREEN_INTRO } from '../lib/screenManifesto'
 import BrandBackdrop from '../components/BrandBackdrop'
 import PageHeader from '../components/PageHeader'
+import SheetsBackupSection from '../components/connections/SheetsBackupSection'
 
 function MetricBlock({ label, value, urgent }) {
   return (
@@ -45,6 +46,7 @@ export default function ReportsView() {
           Henüz rapor oluşturacak veri yok. Müşteri, tahsilat ve brief kayıtları
           oluştukça burada özet görünür.
         </p>
+        <SheetsBackupSection />
       </main>
     )
   }
@@ -113,6 +115,8 @@ export default function ReportsView() {
           />
         </div>
       </section>
+
+      <SheetsBackupSection />
     </main>
   )
 }

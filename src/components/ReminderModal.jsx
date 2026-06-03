@@ -82,7 +82,7 @@ export default function ReminderModal({ payment, clientName, onClose, onSent }) 
         />
 
         <p className="mt-4 font-sans text-xs text-muted">
-          WhatsApp&apos;a aktarım Faz 2&apos;de. Şimdilik metni kopyalayın.
+          WhatsApp aktarımı Bağlantılar Merkezi ile hazırlanıyor. Şimdilik metni kopyalayın.
         </p>
 
         <div className="mt-6 flex flex-col gap-2 sm:flex-row">

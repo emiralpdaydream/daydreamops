@@ -11,7 +11,8 @@ import { ToastProvider } from './lib/toast'
 import { ThemeProvider } from './lib/ThemeProvider'
 import { ViewModeProvider } from './lib/ViewModeProvider'
 import DaydreamOperatorPanel from './components/DaydreamOperatorPanel'
-import OperatorFab from './components/OperatorFab'
+import MailPreviewView from './components/mail/MailPreviewView'
+import { MailDraftProvider } from './lib/mailDraftContext'
 import BrandsView from './views/BrandsView'
 import CrmView from './views/CrmView'
 import DashboardView from './views/DashboardView'
@@ -28,6 +29,7 @@ function AppMain({ onLogout }) {
 
   return (
     <OperatorProvider data={data}>
+      <MailDraftProvider>
       <AppShell screen={screen} onNavigate={setScreen} onLogout={onLogout}>
         {screen === SCREENS.DASHBOARD && (
           <DashboardView onNavigate={setScreen} />
@@ -39,10 +41,13 @@ function AppMain({ onLogout }) {
         {screen === SCREENS.TAHSILAT && <TahsilatView />}
         {screen === SCREENS.REPORTS && <ReportsView />}
         {screen === SCREENS.TEKLIF && <TeklifView />}
-        {screen === SCREENS.SETTINGS && <SettingsView />}
+        {screen === SCREENS.SETTINGS && (
+          <SettingsView onNavigate={setScreen} />
+        )}
       </AppShell>
-      <OperatorFab />
       <DaydreamOperatorPanel />
+      <MailPreviewView />
+      </MailDraftProvider>
     </OperatorProvider>
   )
 }

@@ -10,9 +10,9 @@ const VIEW_OPTIONS = [
 ]
 
 const THEME_OPTIONS = [
-  { id: THEME_MODE.AUTO, label: 'Otomatik', hint: 'Sistem gündüz/gece ayarı' },
-  { id: THEME_MODE.DAY, label: 'Gündüz modu', hint: 'Açık, sıcak zemin' },
-  { id: THEME_MODE.NIGHT, label: 'Gece modu', hint: 'Koyu, göz yormayan' },
+  { id: THEME_MODE.AUTO, label: 'Otomatik', hint: 'Cihaz temasını takip eder' },
+  { id: THEME_MODE.DAY, label: 'Gündüz', hint: 'Sıcak krem zemin, kömür yazı' },
+  { id: THEME_MODE.NIGHT, label: 'Gece', hint: 'Sinematik koyu kontrol odası' },
 ]
 
 function OptionGroup({ title, hint, activeLabel, options, value, onChange, name }) {
@@ -71,8 +71,8 @@ export default function AppearanceSettings() {
       />
 
       <OptionGroup
-        title="Gündüz / Gece"
-        hint="Operator ve tüm ekranlar seçilen temayı kullanır."
+        title="Tema"
+        hint="Otomatik · Gündüz · Gece — tüm ekranlar aynı token setini kullanır."
         options={THEME_OPTIONS}
         name="theme-mode"
         value={themePref}

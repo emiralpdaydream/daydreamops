@@ -32,7 +32,7 @@ export default function ClientModal({ client, onSave, onClose }) {
           {client.name ? 'Müşteri' : 'Yeni müşteri'}
         </h2>
         <p className="mt-2 text-xs text-muted">
-          Pitch deck — Faz 2. İletişim ve fiyat alanları operasyon merkezi için.
+          Pitch deck alanı hazırlanıyor. İletişim ve fiyat alanları operasyon merkezi için.
         </p>
 
         <label className="mt-6 block">
@@ -153,7 +153,7 @@ export default function ClientModal({ client, onSave, onClose }) {
             className="input-premium mt-2 min-h-[60px]"
             value={form.pitch_deck_notes ?? ''}
             onChange={(e) => update('pitch_deck_notes', e.target.value)}
-            placeholder="Link veya Faz 2 — otomatik deck"
+            placeholder="Deck linki — entegrasyon hazırlandığında"
           />
         </label>
 

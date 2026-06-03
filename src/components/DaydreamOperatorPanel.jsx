@@ -8,7 +8,10 @@ import {
   startListening,
   stopListening,
 } from '../lib/speechRecognition'
-import { isSpeechSynthesisSupported } from '../lib/speechOutput'
+import {
+  isSpeechSynthesisSupported,
+  isSpeechUnlockRequired,
+} from '../lib/speechOutput'
 
 export default function DaydreamOperatorPanel() {
   const {
@@ -20,12 +23,14 @@ export default function DaydreamOperatorPanel() {
     loading,
     error,
     voiceReply,
+    voicePrepared,
     speaking,
     listening,
     setListening,
     sendMessage,
     toggleVoiceReply,
     stopVoice,
+    prepareVoice,
   } = useOperator()
 
   const scrollRef = useRef(null)
@@ -37,6 +42,15 @@ export default function DaydreamOperatorPanel() {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight
     }
   }, [messages, loading])
+
+  useEffect(() => {
+    if (!open) return undefined
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = prev
+    }
+  }, [open])
 
   if (!open) return null
 
@@ -149,14 +163,40 @@ export default function DaydreamOperatorPanel() {
 
         <footer className="operator-panel__foot">
           <div className="operator-voice-row">
-            <button
-              type="button"
-              className={`operator-voice-toggle${voiceReply ? ' is-on' : ''}`}
-              onClick={toggleVoiceReply}
-              disabled={!isSpeechSynthesisSupported()}
-            >
-              Sesli Yanıt: {voiceReply ? 'Açık' : 'Kapalı'}
-            </button>
+            {isSpeechSynthesisSupported() ? (
+              <>
+                {isSpeechUnlockRequired() && !voicePrepared && (
+                  <button
+                    type="button"
+                    className="btn-outline operator-voice-prepare"
+                    onClick={prepareVoice}
+                  >
+                    Sesi Hazırla
+                  </button>
+                )}
+                <button
+                  type="button"
+                  className={`operator-voice-toggle${voiceReply ? ' is-on' : ''}`}
+                  onClick={toggleVoiceReply}
+                  title={
+                    isSpeechUnlockRequired() && !voicePrepared
+                      ? 'Önce Sesi Hazırla ile iOS ses iznini verin'
+                      : undefined
+                  }
+                >
+                  Sesli Yanıt: {voiceReply ? 'Açık' : 'Kapalı'}
+                </button>
+                {isSpeechUnlockRequired() && !voicePrepared && voiceReply && (
+                  <span className="operator-foot-note">
+                    iPhone: sesli yanıt için önce Sesi Hazırla&apos;ya dokunun.
+                  </span>
+                )}
+              </>
+            ) : (
+              <span className="operator-foot-note">
+                Bu cihazda sesli yanıt desteklenmiyor.
+              </span>
+            )}
             {speaking && (
               <span className="operator-speaking">
                 <span className="operator-pulse" aria-hidden />

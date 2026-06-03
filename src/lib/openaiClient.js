@@ -3,7 +3,7 @@ import { buildOpsContextForAgent } from './agentContext'
 import { OPENAI_ENABLED, OPENAI_MODEL } from './env'
 
 /**
- * Faz 2 — OpenAI çağrıları yerel dev proxy üzerinden (/api/openai).
+ * Eski dev proxy — artık /api/operator kullanılır.
  * Anahtar .env.local içinde kalır; tarayıcı bundle'ına girmez.
  */
 export async function chatCompletion({ messages, model = OPENAI_MODEL }) {

@@ -33,50 +33,13 @@ export const SCREENS = {
   SETTINGS: 'settings',
 }
 
-/** Entegrasyon durumları */
+/** Entegrasyon durumları — Bağlantılar Merkezi */
 export const INTEGRATION_STATUS = {
   CONNECTED: 'Bağlı',
   DISCONNECTED: 'Bağlı değil',
   PREPARING: 'Hazırlanıyor',
+  READY: 'Hazır',
+  NEXT_PHASE: 'Sıradaki veri altyapısı',
+  PENDING_AUTH: 'Yetki bekliyor',
+  ERROR: 'Hata',
 }
-
-/** Ayarlar > Bağlantılar */
-export const CONNECTION_MODULES = [
-  {
-    id: 'openai',
-    title: 'OpenAI',
-    status: INTEGRATION_STATUS.DISCONNECTED,
-    description:
-      'Daydream Operator — tahsilat, brief, teklif ve rapor analizi.',
-  },
-  {
-    id: 'drive',
-    title: 'Google Drive',
-    status: INTEGRATION_STATUS.PREPARING,
-    description: 'Teklif PDF’leri ve müşteri klasörleri.',
-  },
-  {
-    id: 'gmail',
-    title: 'Gmail',
-    status: INTEGRATION_STATUS.PREPARING,
-    description: 'Teklif ve tahsilat e-posta taslakları.',
-  },
-  {
-    id: 'calendar',
-    title: 'Google Calendar',
-    status: INTEGRATION_STATUS.PREPARING,
-    description: 'Toplantı ve teslim tarihleri.',
-  },
-  {
-    id: 'supabase',
-    title: 'Supabase',
-    status: INTEGRATION_STATUS.DISCONNECTED,
-    description: 'Bulut senkron ve yedek (planlanan).',
-  },
-  {
-    id: 'whatsapp',
-    title: 'WhatsApp',
-    status: INTEGRATION_STATUS.PREPARING,
-    description: 'Hatırlatma mesajlarını hızlı aktarım.',
-  },
-]

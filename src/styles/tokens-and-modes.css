@@ -1,23 +1,7 @@
 /* Daydream Ops — design tokens + mobile/web görünüm modları */
+@import './theme-tokens.css';
 
 :root {
-  --color-bg: #ebe8e2;
-  --color-surface: #fbfaf7;
-  --color-surface-elevated: #ffffff;
-  --color-surface-dark: #1c1b19;
-  --color-surface-dark-mid: #252320;
-  --color-text: #171615;
-  --color-text-muted: #5c574f;
-  --color-text-soft: #726d66;
-  --color-text-on-dark: #f7f3ea;
-  --color-text-muted-on-dark: #b9b2a8;
-  --color-border: #ddd6cb;
-  --color-border-subtle: #e8e2d8;
-  --color-border-focus: #171615;
-  --color-burgundy: #7a1028;
-  --color-burgundy-hover: #5c0c1e;
-  --color-gold: #9a7b4f;
-
   --font-display: 'Cormorant Garamond', Georgia, serif;
   --font-ui: Inter, system-ui, sans-serif;
 
@@ -42,8 +26,13 @@ body,
 
 .text-dim,
 .connection-action,
-.data-cell-hint {
+.data-cell-hint,
+.member-copy {
   color: var(--color-text-muted) !important;
+}
+
+.text-secondary {
+  color: var(--color-text-secondary);
 }
 
 .screen-title {
@@ -115,7 +104,7 @@ body,
 
 .btn-primary:disabled {
   opacity: 0.55;
-  color: rgba(247, 243, 234, 0.85);
+  color: var(--color-btn-primary-disabled-fg);
 }
 
 .btn-outline {
@@ -145,9 +134,9 @@ body,
     155deg,
     var(--color-surface-dark) 0%,
     var(--color-surface-dark-mid) 55%,
-    #1a1917 100%
+    var(--color-bg-warm) 100%
   );
-  border-color: #3a3632;
+  border-color: var(--color-border-on-dark);
 }
 
 .operator-dashboard-card__title {
@@ -156,13 +145,12 @@ body,
 }
 
 .operator-dashboard-card__line,
-.operator-dashboard-card__stat,
-.operator-dashboard-card__eyebrow {
-  color: var(--color-text-muted-on-dark);
+.operator-dashboard-card__stat {
+  color: var(--color-text-secondary-on-dark);
 }
 
 .operator-dashboard-card__eyebrow {
-  color: #c4a0a8;
+  color: var(--color-accent-soft);
 }
 
 /* Görünüm modu seçici */
@@ -240,12 +228,12 @@ body,
   min-width: 0;
   height: 2.75rem;
   padding: 0.55rem 0.75rem;
-  border: 1px solid #4a4540;
+  border: 1px solid var(--color-operator-border);
   border-radius: 6px;
   background: rgba(255, 255, 255, 0.1);
-  color: #f7f3ea !important;
-  -webkit-text-fill-color: #f7f3ea !important;
-  caret-color: #f7f3ea;
+  color: var(--color-operator-text) !important;
+  -webkit-text-fill-color: var(--color-operator-text) !important;
+  caret-color: var(--color-operator-text);
   font-family: var(--font-ui);
   font-size: 16px;
   line-height: 1.4;
@@ -253,43 +241,32 @@ body,
 }
 
 .operator-panel .operator-input::placeholder {
-  color: #b9b2a8 !important;
+  color: var(--color-text-secondary-on-dark) !important;
   opacity: 1;
 }
 
 .operator-panel .operator-input:focus {
-  border-color: #7a1028;
+  border-color: var(--color-burgundy);
   background: rgba(255, 255, 255, 0.14);
   box-shadow: 0 0 0 1px rgba(122, 16, 40, 0.35);
 }
 
 .operator-panel .operator-input:disabled {
   opacity: 0.55;
-  color: #d4cfc4 !important;
-  -webkit-text-fill-color: #d4cfc4 !important;
+  color: var(--color-text-secondary-on-dark) !important;
+  -webkit-text-fill-color: var(--color-text-secondary-on-dark) !important;
 }
 
 .operator-panel .operator-input:-webkit-autofill,
 .operator-panel .operator-input:-webkit-autofill:hover,
 .operator-panel .operator-input:-webkit-autofill:focus {
-  -webkit-text-fill-color: #f7f3ea !important;
-  -webkit-box-shadow: 0 0 0 1000px #2a2826 inset !important;
-  box-shadow: 0 0 0 1000px #2a2826 inset !important;
+  -webkit-text-fill-color: var(--color-operator-text) !important;
+  -webkit-box-shadow: 0 0 0 1000px var(--color-operator-surface) inset !important;
+  box-shadow: 0 0 0 1000px var(--color-operator-surface) inset !important;
   transition: background-color 9999s ease-out 0s;
 }
 
-/* —— Gece modu —— */
-html[data-theme='night'] {
-  --color-bg: #141312;
-  --color-surface: #1c1b19;
-  --color-surface-elevated: #252320;
-  --color-text: #f7f3ea;
-  --color-text-muted: #c9c2b8;
-  --color-text-soft: #b9b2a8;
-  --color-border: #3a3632;
-  --color-border-subtle: #322e2a;
-  --color-border-focus: #e8e2d8;
-}
+/* Gece — bileşen düzeltmeleri (token değerleri theme-tokens.css) */
 
 html[data-theme='night'] .cinematic-scene::before {
   opacity: 0.06;
@@ -355,18 +332,118 @@ html[data-theme='night'] .integration-card {
 }
 
 html[data-theme='night'] .toast-premium {
-  background: #2a2826;
+  background: var(--color-surface-elevated);
   color: var(--color-text);
   border-color: var(--color-border);
 }
 
-/* Gündüz modu açıkça işaretli (varsayılan :root ile aynı) */
-html[data-theme='day'] {
-  color-scheme: light;
+/* Dashboard koyu özet kartları — gece/gündüz aynı kontrast */
+.dashboard-summary-card.focus-card {
+  background: linear-gradient(
+    160deg,
+    var(--color-surface-dark) 0%,
+    var(--color-surface-dark-mid) 100%
+  );
+  border: 1px solid var(--color-border-on-dark);
 }
 
-html[data-theme='night'] {
-  color-scheme: dark;
+.dashboard-summary-card .focus-card-title,
+.dashboard-summary-card .focus-card-body,
+.dashboard-summary-card .focus-card-body p,
+.dashboard-summary-card .priority-line,
+.dashboard-summary-card .text-text {
+  color: var(--color-text-on-dark) !important;
+}
+
+.dashboard-summary-card .focus-card-meta,
+.dashboard-summary-card .text-dim,
+.dashboard-summary-card .font-display.text-dim {
+  color: var(--color-text-secondary-on-dark) !important;
+}
+
+.dashboard-summary-card .btn-ghost {
+  color: var(--color-text-secondary-on-dark);
+}
+
+.dashboard-summary-card .btn-ghost:hover {
+  color: var(--color-text-on-dark);
+}
+
+.dashboard-summary-card .border-border {
+  border-color: var(--color-border-on-dark) !important;
+}
+
+.dashboard-metrics .data-cell {
+  background: var(--color-surface-elevated);
+}
+
+.dashboard-metrics .data-cell-label {
+  color: var(--color-text-secondary) !important;
+}
+
+.dashboard-metrics .data-cell-value {
+  color: var(--color-text) !important;
+}
+
+.dashboard-metrics .data-cell-hint {
+  color: var(--color-text-muted) !important;
+}
+
+.integration-card {
+  background: var(--color-surface-elevated);
+  border-color: var(--color-border-subtle);
+}
+
+.integration-card__title {
+  color: var(--color-text);
+}
+
+.integration-card__desc {
+  color: var(--color-text-secondary);
+}
+
+.disabled-action-card {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text-secondary);
+}
+
+.btn-outline:disabled,
+.btn-primary:disabled {
+  color: var(--color-disabled-fg);
+}
+
+html[data-theme='night'] .btn-outline:disabled {
+  color: var(--color-text-muted);
+}
+
+.hub-placeholder-card {
+  background: var(--color-surface-elevated);
+  border-color: var(--color-border-subtle);
+}
+
+.hub-placeholder-card__title {
+  color: var(--color-text);
+}
+
+.hub-placeholder-card__desc,
+.hub-placeholder-card__note,
+.hub-placeholder-card__folder {
+  color: var(--color-text-secondary);
+}
+
+.connections-hub__intro,
+.connections-hub__status-line {
+  color: var(--color-text-secondary);
+}
+
+.connections-hub__gemini-note {
+  background: var(--color-surface);
+  border-color: var(--color-border-subtle);
+}
+
+.connections-hub__gemini-note-text {
+  color: var(--color-text-secondary);
 }
 
 /* Varsayılan: JS yüklenene kadar mobil */

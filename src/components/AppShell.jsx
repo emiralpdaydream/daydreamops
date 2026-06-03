@@ -48,18 +48,13 @@ export default function AppShell({
       <div className="workspace flex min-h-0 min-w-0 w-full max-w-full flex-1 flex-col overflow-x-clip">
         <header className="nav-topbar">
           <BrandMark />
-          <div className="flex shrink-0 items-center gap-2">
-            <button
-              type="button"
-              className="btn-outline operator-topbar-btn"
-              onClick={() => setOpen(true)}
-            >
-              AI
-            </button>
-            <button type="button" onClick={onLogout} className="btn-ghost">
-              Çıkış
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={onLogout}
+            className="btn-ghost nav-topbar-logout shrink-0"
+          >
+            Çıkış
+          </button>
         </header>
 
         <header className="workspace-bar">
@@ -70,7 +65,7 @@ export default function AppShell({
           <div className="flex shrink-0 items-center gap-2">
             <button
               type="button"
-              className="btn-outline operator-topbar-btn"
+              className="btn-outline operator-topbar-btn operator-topbar-btn--web-only"
               onClick={() => setOpen(true)}
             >
               Operator

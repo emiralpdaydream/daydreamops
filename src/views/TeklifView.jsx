@@ -137,8 +137,8 @@ export default function TeklifView() {
             </button>
           </div>
           <div className="disabled-action-card">
-            PDF ve e-posta gönderimi Faz 2&apos;de açılacak. Drive&apos;a kayıt
-            Ayarlar &gt; Bağlantılar üzerinden gelecek.
+            PDF ve e-posta gönderimi Bağlantılar Merkezi üzerinden hazırlanıyor.
+            Drive bağlantısı hazırlandığında teklifler otomatik arşivlenebilecek.
           </div>
         </form>
 

@@ -1,4 +1,6 @@
 import { useOps } from '../lib/useOps'
+import { useMailDraft } from '../lib/useMailDraft'
+import { saveGmailDraft, testGmailConnection } from '../lib/gmailClient'
 import { useToast } from '../lib/useToast'
 
 function whatsAppUrl(text) {
@@ -7,6 +9,7 @@ function whatsAppUrl(text) {
 
 export default function ProposedActionBar({ action, onDone }) {
   const { addBriefTask, saveProposal, createEmptyProposal } = useOps()
+  const { openPreview } = useMailDraft()
   const { showToast } = useToast()
 
   if (!action?.type || action.type === 'info') return null
@@ -19,6 +22,82 @@ export default function ProposedActionBar({ action, onDone }) {
     } catch {
       showToast('Kopyalama başarısız')
     }
+  }
+
+  if (action.type === 'mailDraft') {
+    const openMail = (edit = false) => {
+      openPreview(
+        {
+          subject: action.subject,
+          body: action.body,
+          clientName: action.clientName,
+          tone: action.tone,
+          summary: action.summary,
+          to: '',
+          cc: '',
+        },
+        edit,
+      )
+    }
+
+    return (
+      <div className="operator-action-bar">
+        <p className="operator-action-preview">
+          {action.summary || action.subject || 'Mail taslağı hazır.'}
+        </p>
+        <div className="operator-action-buttons">
+          <button
+            type="button"
+            className="btn-outline"
+            onClick={() => openMail(false)}
+          >
+            Önizle
+          </button>
+          <button type="button" className="btn-outline" onClick={() => openMail(true)}>
+            Düzenle
+          </button>
+          <button
+            type="button"
+            className="btn-primary btn-primary-inline"
+            onClick={() => openMail(true)}
+          >
+            Gmail ile Gönder
+          </button>
+          <button
+            type="button"
+            className="btn-outline"
+            onClick={async () => {
+              const gmail = await testGmailConnection()
+              if (!gmail.ok) {
+                showToast(
+                  'Gmail bağlantısı aktif değil. Ayarlar > Bağlantılar Merkezi üzerinden bağlayın.',
+                )
+                openMail(true)
+                return
+              }
+              const r = await saveGmailDraft({
+                to: '',
+                cc: '',
+                subject: action.subject,
+                body: action.body,
+              })
+              if (!r.ok) {
+                showToast(r.message)
+                openMail(true)
+                return
+              }
+              showToast(r.message)
+              onDone?.()
+            }}
+          >
+            Taslak Kaydet
+          </button>
+          <button type="button" className="btn-ghost" onClick={onDone}>
+            Vazgeç
+          </button>
+        </div>
+      </div>
+    )
   }
 
   if (action.type === 'message') {
@@ -56,10 +135,10 @@ export default function ProposedActionBar({ action, onDone }) {
         <div className="operator-action-buttons">
           <button
             type="button"
-            className="btn-primary btn-primary-inline"
+            className="btn-primary btn-primary-inline operator-action-confirm"
             onClick={() => {
               addBriefTask(action.text)
-              showToast('Görev eklendi')
+              showToast('Görev eklendi.')
               onDone?.()
             }}
           >

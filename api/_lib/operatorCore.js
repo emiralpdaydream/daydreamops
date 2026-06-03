@@ -1,33 +1,32 @@
-const SYSTEM_PROMPT = `Sen Daydream Ops içindeki operasyon asistanısın. Daydream Production'ın kurucusuna yardımcı oluyorsun. Görevin müşteri, tahsilat, brief, teklif ve rapor verilerini analiz etmek; kısa, net, profesyonel cevaplar vermek; kritik aksiyonlarda kullanıcı onayı istemek; asla API anahtarı, gizli bilgi veya sistem içi teknik detayları ifşa etmemek. Türkçe, kısa, net, abartısız, kurucu asistanı tonunda konuş.
-
-Yanıtını YALNIZCA geçerli JSON olarak ver (markdown yok):
-{
-  "reply": "kullanıcıya görünen metin",
-  "proposedAction": null veya { "type": "...", ... }
-}
-
-proposedAction türleri:
-- "info" — sadece analiz, ek alan gerekmez
-- "message" — { "type":"message", "text":"hatırlatma metni", "tone":"nazik|direkt|kisa" }
-- "addTask" — { "type":"addTask", "text":"görev metni" }
-- "proposalDraft" — { "type":"proposalDraft", "title":"", "body":"", "clientName":"", "budget":0 }
-
-Silme, ödeme işaretleme, arşivleme önerme — kullanıcıya yalnızca metinle uyar, proposedAction üretme.
-Kritik işlemlerde proposedAction kullan; kullanıcı onayı olmadan veri değişikliği yokmuş gibi davran.`
+import {
+  chatWithAi,
+  resolveAiProvider,
+  testAiConnection,
+} from './aiProvider.js'
 
 const ALLOWED_ACTION_TYPES = new Set([
   'info',
   'message',
   'addTask',
   'proposalDraft',
+  'mailDraft',
 ])
 
-function safeErrorMessage(status, apiMessage) {
-  if (status === 401) return 'OpenAI bağlantısı kurulamadı. Anahtar geçersiz olabilir.'
-  if (status === 429) return 'İstek limiti aşıldı. Biraz sonra tekrar deneyin.'
-  if (status >= 500) return 'OpenAI geçici olarak yanıt vermiyor.'
-  if (apiMessage && !/key|sk-|bearer|authorization/i.test(apiMessage)) {
-    return 'İstek tamamlanamadı. Lütfen tekrar deneyin.'
+function safeErrorMessage(err, providerId) {
+  const msg = String(err?.message ?? '')
+  const label = providerId === 'gemini' ? 'Google Gemini' : 'OpenAI'
+  if (msg === 'not_configured') {
+    return 'AI yapılandırılmadı. Vercel’de OPENAI_API_KEY veya GEMINI_API_KEY / GOOGLE_API_KEY tanımlayın.'
+  }
+  if (msg === 'no_messages') return 'En az bir mesaj gerekli.'
+  if (/401|403|invalid|api key/i.test(msg)) {
+    return `${label} bağlantısı kurulamadı. Anahtar geçersiz olabilir.`
+  }
+  if (/429|quota|rate/i.test(msg)) {
+    return 'İstek limiti aşıldı. Biraz sonra tekrar deneyin.'
+  }
+  if (/key|sk-|bearer|authorization/i.test(msg)) {
+    return 'Operatör yanıt veremedi. Lütfen tekrar deneyin.'
   }
   return 'Operatör yanıt veremedi. Lütfen tekrar deneyin.'
 }
@@ -62,159 +61,99 @@ function sanitizeProposedAction(action) {
       budget: Number(action.budget) || 0,
     }
   }
-  return undefined
-}
-
-function parseModelJson(raw) {
-  const trimmed = String(raw ?? '').trim()
-  const jsonStart = trimmed.indexOf('{')
-  const jsonEnd = trimmed.lastIndexOf('}')
-  const slice =
-    jsonStart >= 0 && jsonEnd > jsonStart
-      ? trimmed.slice(jsonStart, jsonEnd + 1)
-      : trimmed
-  try {
-    const parsed = JSON.parse(slice)
-    const reply = String(parsed.reply ?? '').trim()
-    if (!reply) return null
+  if (type === 'mailDraft') {
+    const body = String(action.body ?? '').trim().slice(0, 12000)
+    if (!body) return undefined
+    const tone = ['nazik', 'direkt', 'premium', 'kisa', 'resmi'].includes(
+      action.tone,
+    )
+      ? action.tone
+      : 'nazik'
     return {
-      reply,
-      proposedAction: sanitizeProposedAction(parsed.proposedAction),
+      type: 'mailDraft',
+      subject: String(action.subject ?? 'Daydream Production').slice(0, 300),
+      body,
+      clientName: String(action.clientName ?? '').slice(0, 120),
+      tone,
+      summary: String(action.summary ?? '').slice(0, 500),
     }
-  } catch {
-    return { reply: trimmed.slice(0, 4000), proposedAction: undefined }
   }
-}
-
-function buildContextMessage(dataSnapshot) {
-  if (!dataSnapshot || typeof dataSnapshot !== 'object') {
-    return 'Operasyon verisi: (boş)'
-  }
-  return `Operasyon özeti (JSON):\n${JSON.stringify(dataSnapshot)}`
+  return undefined
 }
 
 /**
  * @param {{ messages?: unknown[], dataSnapshot?: object, voiceReply?: boolean, test?: boolean }} input
  */
 export async function handleOperatorRequest(input) {
-  const apiKey = process.env.OPENAI_API_KEY
-  if (!apiKey?.trim()) {
+  if (input?.test === true) {
+    const result = await testAiConnection()
+    if (!result.ok) {
+      return {
+        status: 503,
+        body: {
+          ok: false,
+          provider: result.provider ?? null,
+          error: result.error,
+        },
+      }
+    }
+    return {
+      status: 200,
+      body: {
+        ok: true,
+        provider: result.provider,
+        reply: result.reply,
+      },
+    }
+  }
+
+  const provider = resolveAiProvider()
+  if (!provider) {
     return {
       status: 503,
       body: {
         error:
-          'OpenAI yapılandırılmadı. Vercel ortam değişkeninde OPENAI_API_KEY tanımlayın.',
+          'AI yapılandırılmadı. Vercel’de OPENAI_API_KEY veya GEMINI_API_KEY / GOOGLE_API_KEY ekleyin.',
       },
     }
   }
-
-  if (input?.test === true) {
-    try {
-      const res = await fetch('https://api.openai.com/v1/models', {
-        headers: { Authorization: `Bearer ${apiKey}` },
-      })
-      if (!res.ok) {
-        return {
-          status: res.status === 401 ? 503 : 502,
-          body: {
-            ok: false,
-            error: safeErrorMessage(res.status),
-          },
-        }
-      }
-      return {
-        status: 200,
-        body: { ok: true, reply: 'OpenAI bağlantısı aktif.' },
-      }
-    } catch {
-      return {
-        status: 502,
-        body: { ok: false, error: 'OpenAI bağlantısı kurulamadı.' },
-      }
-    }
-  }
-
-  const userMessages = Array.isArray(input?.messages)
-    ? input.messages
-        .filter(
-          (m) =>
-            m &&
-            typeof m === 'object' &&
-            (m.role === 'user' || m.role === 'assistant') &&
-            typeof m.content === 'string',
-        )
-        .slice(-20)
-        .map((m) => ({
-          role: m.role,
-          content: String(m.content).slice(0, 4000),
-        }))
-    : []
-
-  if (userMessages.length === 0) {
-    return {
-      status: 400,
-      body: { error: 'En az bir mesaj gerekli.' },
-    }
-  }
-
-  const model = process.env.OPENAI_MODEL || 'gpt-4o-mini'
-  const contextNote = buildContextMessage(input.dataSnapshot)
-  const voiceHint = input.voiceReply
-    ? '\nKullanıcı sesli yanıt açık; cevabı kısa ve okunabilir tut.'
-    : ''
-
-  const openaiMessages = [
-    { role: 'system', content: SYSTEM_PROMPT + voiceHint },
-    { role: 'system', content: contextNote },
-    ...userMessages,
-  ]
 
   try {
-    const res = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model,
-        messages: openaiMessages,
-        max_tokens: 900,
-        temperature: 0.4,
-        response_format: { type: 'json_object' },
-      }),
+    const parsed = await chatWithAi({
+      messages: input?.messages,
+      dataSnapshot: input?.dataSnapshot,
+      voiceReply: input?.voiceReply,
     })
-
-    const data = await res.json().catch(() => ({}))
-
-    if (!res.ok) {
-      const apiMsg = data?.error?.message
-      return {
-        status: res.status >= 500 ? 502 : 400,
-        body: { error: safeErrorMessage(res.status, apiMsg) },
-      }
-    }
-
-    const raw = data?.choices?.[0]?.message?.content ?? ''
-    const parsed = parseModelJson(raw)
     if (!parsed?.reply) {
       return {
         status: 502,
         body: { error: 'Operatör yanıtı işlenemedi.' },
       }
     }
-
     return {
       status: 200,
       body: {
         reply: parsed.reply,
-        proposedAction: parsed.proposedAction,
+        proposedAction: sanitizeProposedAction(parsed.proposedAction),
+        provider: provider.id,
       },
     }
-  } catch {
+  } catch (err) {
+    if (err?.message === 'no_messages') {
+      return { status: 400, body: { error: 'En az bir mesaj gerekli.' } }
+    }
+    if (err?.message === 'not_configured') {
+      return {
+        status: 503,
+        body: {
+          error:
+            'AI yapılandırılmadı. Vercel’de OPENAI_API_KEY veya GEMINI_API_KEY / GOOGLE_API_KEY ekleyin.',
+        },
+      }
+    }
     return {
       status: 502,
-      body: { error: 'OpenAI bağlantısı kurulamadı.' },
+      body: { error: safeErrorMessage(err, provider.id) },
     }
   }
 }

@@ -1,5 +1,5 @@
 /**
- * Daydream Operator — tüm OpenAI çağrıları /api/operator üzerinden.
+ * Daydream Operator — AI çağrıları /api/operator üzerinden (OpenAI veya Gemini).
  * API anahtarı yalnızca sunucu ortam değişkeninde.
  */
 
@@ -40,18 +40,24 @@ export async function checkOperatorConnection() {
     })
     const body = await res.json().catch(() => ({}))
     if (res.ok && body.ok) {
-      return { ok: true, code: 'connected', message: body.reply }
+      return {
+        ok: true,
+        code: 'connected',
+        provider: body.provider ?? 'openai',
+        message: body.reply,
+      }
     }
     return {
       ok: false,
       code: res.status === 503 ? 'not_configured' : 'error',
-      message: body.error || 'OpenAI bağlantısı kurulamadı.',
+      provider: body.provider ?? null,
+      message: body.error || 'AI bağlantısı kurulamadı.',
     }
   } catch {
     return {
       ok: false,
       code: 'network',
-      message: 'OpenAI bağlantısı kurulamadı.',
+      message: 'AI bağlantısı kurulamadı.',
     }
   }
 }

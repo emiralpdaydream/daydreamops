@@ -22,7 +22,7 @@ export default function ConfirmModal({
           {title}
         </h2>
         {message && (
-          <p className="mt-3 font-sans text-sm leading-relaxed text-dim">{message}</p>
+          <div className="mt-3 font-sans text-sm leading-relaxed text-dim">{message}</div>
         )}
         <div className="modal-actions">
           <button type="button" onClick={onCancel} className="btn-outline">

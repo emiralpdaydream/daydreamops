@@ -23,9 +23,9 @@ function buildLocalSummary(data) {
   }
 
   if (parts.length === 0) {
-    return 'Operasyon sakin — analiz için operatörü açın.'
+    return 'Operasyon sakin — AI sekmesinden analiz başlatın.'
   }
-  return `Bugün: ${parts.join(' · ')}.`
+  return parts.join(' · ')
 }
 
 export default function OperatorDashboardCard() {

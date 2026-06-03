@@ -49,7 +49,7 @@ export default function DashboardView({ onNavigate }) {
                 ? `${stats.briefOpen} açık · ${stats.briefSummary}`
                 : stats.briefSummary
           }
-          className="dashboard-focus"
+          className="dashboard-summary-card"
         >
           {stats.briefTotal === 0 ? (
             <div>
@@ -94,7 +94,11 @@ export default function DashboardView({ onNavigate }) {
 
         <div className="dashboard-aside space-y-8">
           {overdue.length > 0 && (
-            <FocusCard title="Tahsilat" meta="Acil dikkat">
+            <FocusCard
+              title="Tahsilat"
+              meta="Acil dikkat"
+              className="dashboard-summary-card"
+            >
               <ul>
                 {overdue.slice(0, 3).map((item) => (
                   <li
@@ -136,7 +140,7 @@ export default function DashboardView({ onNavigate }) {
 
           <div>
             <p className="label-premium mb-4">Özet</p>
-            <div className="data-grid">
+            <div className="data-grid dashboard-metrics">
               <DataCell
                 label="Aktif müşteri"
                 value={String(stats.activeClients)}

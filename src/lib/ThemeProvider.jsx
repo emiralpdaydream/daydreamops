@@ -33,6 +33,7 @@ export function ThemeProvider({ children }) {
 
   useLayoutEffect(() => {
     applyThemeDom(preference, effective)
+    document.documentElement.classList.add('theme-transition-ready')
   }, [preference, effective])
 
   useEffect(() => {

@@ -6,12 +6,12 @@ import {
   verifyPassword,
 } from '../lib/auth'
 import AppearanceSettings from '../components/AppearanceSettings'
-import ConnectionsPanel from '../components/ConnectionsPanel'
+import ConnectionsHub from '../components/ConnectionsHub'
 import DataManagementSection from '../components/DataManagementSection'
 import PageHeader from '../components/PageHeader'
 import { SCREEN_INTRO } from '../lib/screenManifesto'
 
-export default function SettingsView() {
+export default function SettingsView({ onNavigate }) {
   const [current, setCurrent] = useState('')
   const [next, setNext] = useState('')
   const [confirm, setConfirm] = useState('')
@@ -89,7 +89,7 @@ export default function SettingsView() {
 
       <DataManagementSection />
 
-      <ConnectionsPanel />
+      <ConnectionsHub onNavigate={onNavigate} />
 
       <section className="settings-section max-w-content">
         <h2 className="settings-section__title">Uygulama bilgisi</h2>

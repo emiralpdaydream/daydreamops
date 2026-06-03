@@ -64,42 +64,62 @@ export default function Login({ onSuccess }) {
             {AGENT_LABEL}
           </p>
           <h1 className="screen-title mt-4">Operasyon merkezi</h1>
-          <p className="brand-whisper mt-6 text-center">{BRAND_TAGLINE}</p>
-          <p className="mx-auto mt-6 max-w-xs font-sans text-sm leading-relaxed text-dim">
+          <p className="brand-whisper login-tagline mt-6 text-center">{BRAND_TAGLINE}</p>
+          <p className="login-tagline mx-auto mt-4 max-w-xs text-center font-sans text-sm leading-relaxed">
             Daydream Production operasyon merkezi.
           </p>
-          <p className="member-copy mx-auto mt-4 max-w-xs text-center">
+          <p className="member-copy mx-auto mt-3 max-w-xs text-center">
             Yalnızca kurucu erişimi · Internal system
           </p>
         </div>
 
         <div className="login-form-wrap">
-          <form onSubmit={handleSubmit}>
-            <label className="block">
+          <form onSubmit={handleSubmit} autoComplete="on">
+            {isSetup && (
+              <input
+                type="text"
+                name="username"
+                autoComplete="username"
+                tabIndex={-1}
+                aria-hidden="true"
+                className="login-autofill-decoy"
+                readOnly
+              />
+            )}
+
+            <label className="block login-password-field">
               <span className="label-premium">
                 {isSetup ? 'Şifre belirle' : 'Giriş'}
               </span>
               <input
                 type="password"
+                name={isSetup ? 'new-password' : 'password'}
                 autoComplete={isSetup ? 'new-password' : 'current-password'}
+                autoCapitalize="off"
+                autoCorrect="off"
+                spellCheck={false}
                 value={password}
                 onChange={(e) => setPasswordValue(e.target.value)}
                 className="input-premium"
-                placeholder="••••"
+                placeholder="Şifre"
                 disabled={loading}
               />
             </label>
 
             {isSetup && (
-              <label className="mt-8 block">
+              <label className="mt-6 block login-password-field">
                 <span className="label-premium">Tekrar</span>
                 <input
                   type="password"
+                  name="confirm-password"
                   autoComplete="new-password"
+                  autoCapitalize="off"
+                  autoCorrect="off"
+                  spellCheck={false}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   className="input-premium"
-                  placeholder="••••"
+                  placeholder="Şifreyi tekrar girin"
                   disabled={loading}
                 />
               </label>
@@ -114,13 +134,13 @@ export default function Login({ onSuccess }) {
             <button
               type="submit"
               disabled={loading}
-              className="btn-primary mt-10 disabled:opacity-50"
+              className="btn-primary login-submit mt-8 disabled:opacity-50"
             >
               {loading ? '…' : isSetup ? 'Merkeze gir' : 'Giriş'}
             </button>
           </form>
 
-          <p className="mt-12 text-center text-[10px] tracking-luxury text-muted uppercase">
+          <p className="mt-8 text-center text-[10px] tracking-luxury text-muted uppercase">
             Yalnızca bu cihaz · Seçilmiş erişim
           </p>
         </div>

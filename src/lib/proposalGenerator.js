@@ -25,7 +25,7 @@ ${list}
 NOTLAR
 ${form.notes?.trim() || '—'}
 
-Bu metin Daydream Ops içinde oluşturulmuştur. PDF ve e-posta entegrasyonu sonraki fazda eklenecektir.
+Bu metin Daydream Ops içinde oluşturulmuştur. PDF ve e-posta gönderimi Bağlantılar Merkezi üzerinden hazırlanıyor.
 
 — Daydream Production`
 }

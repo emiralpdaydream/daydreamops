@@ -1,0 +1,106 @@
+/**
+ * Daydream Ops — tek tema katmanı (Gündüz / Gece / Otomatik → data-theme)
+ * Tüm ekranlar bu değişkenleri kullanmalı; sabit hex’leri buraya taşıyın.
+ */
+
+/* —— Gündüz (varsayılan + data-theme=day) —— */
+:root,
+html[data-theme='day'] {
+  color-scheme: light;
+
+  --color-bg: #ebe8e2;
+  --color-bg-warm: #f3f0ea;
+  --color-surface: #fbfaf7;
+  --color-surface-elevated: #ffffff;
+
+  --color-text: #171615;
+  --color-text-secondary: #6f6961;
+  --color-text-muted: #9b948a;
+  --color-text-soft: #6f6961;
+
+  --color-border: #ddd6cb;
+  --color-border-subtle: #e8e2d8;
+  --color-border-focus: #171615;
+
+  --color-burgundy: #7a1028;
+  --color-burgundy-hover: #5c0c1e;
+  --color-gold: #9a7b4f;
+  --color-accent-soft: #c4a0a8;
+
+  --color-nav-bg: rgba(251, 250, 247, 0.96);
+  --color-nav-bg-mobile: rgba(20, 20, 18, 0.92);
+  --color-nav-border: rgba(255, 255, 255, 0.08);
+
+  --color-disabled-fg: rgba(23, 22, 21, 0.45);
+  --color-btn-primary-disabled-fg: rgba(247, 243, 234, 0.85);
+}
+
+/* —— Gece —— */
+html[data-theme='night'] {
+  color-scheme: dark;
+
+  --color-bg: #141312;
+  --color-bg-warm: #1a1917;
+  --color-surface: #1c1b19;
+  --color-surface-elevated: #252320;
+
+  --color-text: #f7f3ea;
+  --color-text-secondary: #c8c0b4;
+  --color-text-muted: #9f978e;
+  --color-text-soft: #c8c0b4;
+
+  --color-border: #3a3632;
+  --color-border-subtle: #322e2a;
+  --color-border-focus: #e8e2d8;
+
+  --color-nav-bg: rgba(28, 27, 25, 0.98);
+  --color-nav-bg-mobile: rgba(20, 20, 18, 0.92);
+  --color-nav-border: rgba(255, 255, 255, 0.08);
+
+  --color-disabled-fg: rgba(247, 243, 234, 0.45);
+  --color-btn-primary-disabled-fg: rgba(247, 243, 234, 0.75);
+}
+
+/* Koyu yüzeyler (Operator kartı, özet kartları) — tema bağımsız kontrast */
+:root {
+  --color-surface-dark: #1c1b19;
+  --color-surface-dark-mid: #252320;
+  --color-text-on-dark: #f7f3ea;
+  --color-text-secondary-on-dark: #c8c0b4;
+  --color-text-muted-on-dark: #9f978e;
+  --color-border-on-dark: rgba(255, 255, 255, 0.12);
+
+  --color-operator-bg: #141312;
+  --color-operator-surface: #1e1d1b;
+  --color-operator-border: #2e2b28;
+  --color-operator-text: var(--color-text-on-dark);
+  --color-operator-text-muted: var(--color-text-muted-on-dark);
+
+  --theme-transition: background-color 200ms ease, color 200ms ease,
+    border-color 200ms ease;
+}
+
+/* Yumuşak tema geçişi */
+html.theme-transition-ready,
+html.theme-transition-ready body,
+html.theme-transition-ready #root,
+html.theme-transition-ready .cinematic-scene,
+html.theme-transition-ready .workspace,
+html.theme-transition-ready .workspace-main,
+html.theme-transition-ready .page-main,
+html.theme-transition-ready .panel-premium,
+html.theme-transition-ready .focus-card,
+html.theme-transition-ready .integration-card,
+html.theme-transition-ready .data-cell,
+html.theme-transition-ready .nav-topbar,
+html.theme-transition-ready .mobile-nav,
+html.theme-transition-ready .workspace-bar,
+html.theme-transition-ready .sidebar-premium,
+html.theme-transition-ready .input-premium,
+html.theme-transition-ready .btn-primary,
+html.theme-transition-ready .btn-outline,
+html.theme-transition-ready .btn-ghost,
+html.theme-transition-ready .hub-placeholder-card,
+html.theme-transition-ready .dashboard-summary-card {
+  transition: var(--theme-transition);
+}

@@ -1,0 +1,239 @@
+/* iPhone / PWA — safe-area, kontrast, bottom nav, operator sheet */
+
+:root {
+  --nav-height: 4.5rem;
+  --nav-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --nav-total-height: calc(var(--nav-height) + var(--nav-safe-bottom));
+  --header-mobile-height: 3.25rem;
+  --header-safe-top: env(safe-area-inset-top, 0px);
+  --header-total-height: calc(var(--header-mobile-height) + var(--header-safe-top));
+}
+
+html[data-effective-view='mobile'] .app-root .workspace {
+  padding-top: var(--header-total-height);
+}
+
+html[data-effective-view='mobile'] .nav-topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 35;
+  min-height: var(--header-total-height);
+  padding: var(--header-safe-top) 0.75rem 0.5rem;
+  background: var(--color-nav-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+
+html[data-effective-view='mobile'] .workspace-main {
+  min-height: 0;
+}
+
+html[data-effective-view='mobile'] .page-main {
+  padding-top: 1rem;
+  padding-bottom: calc(var(--nav-total-height) + 0.75rem);
+}
+
+html[data-effective-view='mobile'] .mobile-nav {
+  min-height: var(--nav-total-height);
+  padding: 0.4rem 0.2rem var(--nav-safe-bottom);
+  background: var(--color-nav-bg-mobile);
+  border-top-color: var(--color-nav-border);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+html[data-effective-view='mobile'] .mobile-nav-item {
+  min-height: 2.75rem;
+  padding: 0.15rem 0.05rem;
+}
+
+html[data-effective-view='mobile'] .mobile-nav-glyph {
+  font-size: 12px;
+  color: var(--color-text-muted-on-dark);
+}
+
+html[data-effective-view='mobile'] .mobile-nav-label {
+  font-size: 11px;
+  line-height: 1.2;
+  letter-spacing: 0;
+  color: var(--color-text-secondary-on-dark);
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+html[data-effective-view='mobile'] .mobile-nav-item.is-active .mobile-nav-label {
+  color: var(--color-text-on-dark);
+}
+
+html[data-effective-view='mobile'] .mobile-nav-item.is-active .mobile-nav-glyph {
+  color: var(--color-accent-soft);
+}
+
+html[data-effective-view='mobile'] .mobile-nav-item.is-active::before {
+  width: 5px;
+  height: 5px;
+  background: var(--color-burgundy);
+}
+
+html[data-effective-view='mobile'] .operator-fab {
+  display: none !important;
+}
+
+html[data-effective-view='mobile'] .toast-premium {
+  bottom: calc(var(--nav-total-height) + 0.5rem);
+}
+
+/* Operator hero — mobil */
+html[data-effective-view='mobile'] .operator-dashboard-card {
+  padding: 1.35rem 1.15rem;
+  gap: 0.85rem;
+}
+
+html[data-effective-view='mobile'] .operator-dashboard-card__stat,
+html[data-effective-view='mobile'] .operator-dashboard-card__line {
+  color: var(--color-text-secondary-on-dark) !important;
+}
+
+.operator-dashboard-card .btn-outline {
+  border-color: var(--color-border-on-dark);
+  color: var(--color-text-on-dark);
+  min-height: 44px;
+}
+
+.operator-dashboard-card .btn-outline:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+html[data-effective-view='mobile'] .dashboard-stagger {
+  gap: 0.85rem;
+}
+
+html[data-effective-view='mobile'] .dashboard-stagger.section-gap {
+  margin-top: 1.1rem;
+}
+
+html[data-effective-view='mobile'] .page-main--dashboard .screen-intro {
+  margin-bottom: 1rem;
+}
+
+html[data-effective-view='mobile'] .quick-actions {
+  margin-top: 0.75rem;
+  padding-bottom: 0.25rem;
+}
+
+/* AI bottom sheet */
+html[data-effective-view='mobile'] .operator-overlay {
+  align-items: flex-end;
+  padding: 0;
+}
+
+html[data-effective-view='mobile'] .operator-panel {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  max-height: 85dvh;
+  margin-top: auto;
+  border-radius: 14px 14px 0 0;
+  border-bottom: none;
+}
+
+html[data-effective-view='mobile'] .operator-panel__foot {
+  padding-bottom: max(0.85rem, env(safe-area-inset-bottom, 0px));
+}
+
+html[data-effective-view='mobile'] .operator-mic {
+  width: 2.75rem;
+  height: 2.75rem;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+html[data-effective-view='mobile'] .operator-voice-toggle {
+  min-height: 44px;
+  padding: 0.35rem 0;
+}
+
+html[data-effective-view='mobile'] .operator-action-bar .btn-primary,
+html[data-effective-view='mobile'] .operator-action-bar .btn-outline,
+html[data-effective-view='mobile'] .operator-action-bar .btn-ghost {
+  min-height: 44px;
+}
+
+.operator-msg .operator-action-preview {
+  color: var(--color-text-secondary-on-dark);
+}
+
+/* Login — scroll, klavye, okunur başlık */
+.login-scene {
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+.login-frame {
+  justify-content: flex-start;
+  min-height: 100dvh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-top: max(1.25rem, env(safe-area-inset-top, 0px));
+  padding-bottom: max(1.5rem, env(safe-area-inset-bottom, 0px));
+}
+
+.login-editorial .login-tagline {
+  color: var(--color-text);
+  opacity: 1;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.login-editorial .login-chapter {
+  color: var(--on-light-secondary);
+  opacity: 1;
+}
+
+.login-form-wrap .input-premium {
+  font-size: 16px;
+  min-height: 44px;
+}
+
+.login-form-wrap .btn-primary {
+  min-height: 48px;
+  font-size: 13px;
+}
+
+.login-form-wrap .btn-primary:disabled {
+  opacity: 0.5;
+  color: rgba(247, 243, 234, 0.9);
+}
+
+.login-password-field input[type='password'] {
+  -webkit-text-security: disc !important;
+  text-security: disc;
+}
+
+.login-autofill-decoy {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+  left: -9999px;
+}
+
+.nav-topbar-logout {
+  min-height: 44px;
+  padding: 0.35rem 0.5rem;
+}
+
+.operator-voice-prepare {
+  min-height: 44px;
+  font-size: 11px;
+}
+
+html[data-effective-view='mobile'] .operator-overlay__backdrop {
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}

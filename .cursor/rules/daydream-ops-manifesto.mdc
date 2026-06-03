@@ -1,0 +1,34 @@
+---
+description: Daydream Ops manifesto + visual reference library
+globs: src/**/*.{jsx,css},index.html,tailwind.config.js
+alwaysApply: false
+---
+
+# Daydream Ops — Tasarım Otoritesi
+
+**Ürün:** Daydream Production operasyon merkezi (LCOS). Dashboard/CRM/SaaS/ERP değil.
+
+**Marka testi** (`src/lib/visualReferences.js`):
+> Bu ekran Park Hyatt, Bulgari, Eleventy veya Roberto Bravo sunumlarının yanında durabilir mi?
+
+## Visual Reference Library (kopyalanmaz)
+
+| Referans | Alınacak |
+|----------|----------|
+| Apple | Boşluk, hiyerarşi, minimalizm |
+| Linear | Dashboard organizasyonu, kart yoğunluğu, UX |
+| Arc | Navigasyon grupları, kreatif tech hissi |
+| Porsche | Zamansız tipografi |
+| Aman | Beyaz alan, yavaş tempo |
+| Soho House / Small World | Üyelik, seçkin erişim |
+| Monocle / Cabana / Wallpaper | Editoryal düzen |
+| daydreamproduction.co | Birincil marka uyumu |
+
+## Kurallar
+
+- Az renk, az ikon, az animasyon
+- Bordo `#6E0D25` yalnızca acil sinyal
+- Logo küçük, bol boşluk, neon/3D/gölge yok
+- Ekran amaçları: `src/lib/screenManifesto.js`
+- Nav grupları: `src/lib/navStructure.js`
+- Linear odak: `FocusCard`, `DataCell`

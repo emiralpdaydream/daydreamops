@@ -1,0 +1,637 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  Daydream Ops — Visual Reference Library (kopya değil, dil rehberi)
+  Apple: boşluk · hiyerarşi | Linear: dashboard · kart yoğunluğu
+  Arc: navigasyon | Porsche: zamansız tipografi | Aman: beyaz alan
+  Soho House / Small World: üyelik | Monocle / Cabana / Wallpaper: editoryal
+  Marka testi: daydreamproduction.co — Park Hyatt, Bulgari, Roberto Bravo…
+*/
+
+@layer base {
+  html,
+  body,
+  #root {
+    min-height: 100%;
+    min-height: 100dvh;
+    background-color: #f6f4ef;
+    color: #1c1b19;
+    font-family:
+      -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial,
+      sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .page-main {
+    flex: 1;
+    width: 100%;
+    max-width: 68rem;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 2rem 1.5rem 4rem;
+    padding-bottom: max(4rem, env(safe-area-inset-bottom));
+  }
+
+  @media (min-width: 768px) {
+    .page-main {
+      padding: 2.5rem 3.5rem 5rem;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .page-main {
+      padding-bottom: calc(6.5rem + env(safe-area-inset-bottom, 0px));
+    }
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: #9a948c;
+  }
+
+  textarea.input-premium {
+    height: auto;
+    min-height: 7rem;
+    padding-top: 0.875rem;
+    padding-bottom: 0.875rem;
+    resize: vertical;
+  }
+}
+
+@layer components {
+  .cinematic-scene {
+    position: relative;
+    min-height: 100vh;
+    background-color: #f6f4ef;
+  }
+
+  .cinematic-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* —— Giriş: seçilmiş merkez —— */
+  .login-frame {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 1.5rem;
+  }
+
+  .login-mark {
+    margin-bottom: 4rem;
+  }
+
+  .login-editorial {
+    max-width: 28rem;
+    text-align: center;
+  }
+
+  .login-form-wrap {
+    width: 100%;
+    max-width: 22rem;
+    margin-top: 3.5rem;
+  }
+
+  /* —— Ekran girişi (dergi kapağı) —— */
+  .screen-intro {
+    margin-bottom: 4rem;
+    padding-bottom: 0;
+  }
+
+  .screen-chapter {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #9a948c;
+  }
+
+  .screen-title {
+    margin-top: 1rem;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: clamp(2.75rem, 7vw, 4.5rem);
+    font-weight: 500;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: #1c1b19;
+  }
+
+  .screen-purpose {
+    margin-top: 1.25rem;
+    max-width: 28rem;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 1.375rem;
+    font-style: italic;
+    font-weight: 500;
+    line-height: 1.35;
+    color: #5c5752;
+  }
+
+  .screen-rule {
+    margin-top: 2.5rem;
+    width: 3rem;
+    height: 1px;
+    background: #1c1b19;
+  }
+
+  /* —— Paneller: nefes alan, yapışmayan —— */
+  .panel-premium {
+    border: 1px solid #e5e1d8;
+    background: #fdfcfa;
+  }
+
+  .panel-inset {
+    border: 1px solid #e5e1d8;
+    background: #f0ede6;
+  }
+
+  .section-gap {
+    margin-top: 4rem;
+  }
+
+  .section-gap-lg {
+    margin-top: 5rem;
+  }
+
+  /* —— Metrik: sessiz, abartısız —— */
+  .metric-quiet {
+    padding: 1.75rem 0;
+    border-top: 1px solid #e5e1d8;
+  }
+
+  .metric-quiet + .metric-quiet {
+    border-top: none;
+  }
+
+  @media (min-width: 640px) {
+    .metric-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2.5rem;
+      border-top: 1px solid #e5e1d8;
+      padding-top: 2rem;
+    }
+
+    .metric-quiet {
+      border-top: none;
+      padding: 0;
+    }
+  }
+
+  /* —— Butonlar: Porsche — az, net —— */
+  .btn-primary {
+    display: block;
+    width: 100%;
+    height: 2.75rem;
+    border: 1px solid #1c1b19;
+    background: #1c1b19;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #fdfcfa;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    opacity: 0.88;
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .btn-ghost {
+    border: none;
+    background: transparent;
+    padding: 0;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    color: #5c5752;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+
+  .btn-ghost:hover {
+    color: #1c1b19;
+  }
+
+  .btn-outline {
+    display: inline-block;
+    height: 2.75rem;
+    border: 1px solid #1c1b19;
+    background: transparent;
+    padding: 0 1.5rem;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    line-height: 2.75rem;
+    color: #1c1b19;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .btn-outline:hover {
+    background: #f0ede6;
+  }
+
+  .input-premium {
+    display: block;
+    width: 100%;
+    height: 2.75rem;
+    border: none;
+    border-bottom: 1px solid #d4cfc4;
+    border-radius: 0;
+    background: transparent;
+    padding: 0;
+    font-size: 15px;
+    color: #1c1b19;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .input-premium:focus {
+    border-bottom-color: #1c1b19;
+  }
+
+  .label-premium {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #9a948c;
+  }
+
+  /* —— Workspace (Linear + Apple) —— */
+  .workspace {
+    background: #f6f4ef;
+  }
+
+  .workspace-main {
+    background: #fdfcfa;
+    border-top: 1px solid #e5e1d8;
+  }
+
+  @media (min-width: 768px) {
+    .workspace-main {
+      border-top: none;
+      border-left: 1px solid #e5e1d8;
+      border-radius: 0;
+    }
+  }
+
+  .workspace-bar {
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #e5e1d8;
+    background: #fdfcfa;
+    padding: 1.25rem 3.5rem;
+  }
+
+  .workspace-chapter {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #9a948c;
+  }
+
+  .workspace-purpose {
+    margin-top: 0.375rem;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 1.125rem;
+    font-style: italic;
+    color: #5c5752;
+  }
+
+  /* —— Arc: gruplu sidebar —— */
+  .sidebar-premium {
+    display: none;
+    min-height: 100vh;
+    width: 248px;
+    flex-shrink: 0;
+    flex-direction: column;
+    border-right: 1px solid #e5e1d8;
+    background: #f6f4ef;
+  }
+
+  @media (min-width: 768px) {
+    .sidebar-premium {
+      display: flex;
+    }
+  }
+
+  .sidebar-brand {
+    padding: 2.5rem 2rem 2rem;
+  }
+
+  .brand-whisper {
+    font-size: 11px;
+    line-height: 1.5;
+    letter-spacing: 0.04em;
+    color: #9a948c;
+  }
+
+  .sidebar-nav {
+    flex: 1;
+    padding: 0.5rem 0 2rem;
+  }
+
+  .nav-group + .nav-group {
+    margin-top: 2rem;
+  }
+
+  .nav-group-label {
+    padding: 0 2rem 0.5rem;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: #b8b0a6;
+  }
+
+  .nav-link {
+    display: block;
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 0.5rem 2rem;
+    font-size: 14px;
+    font-weight: 400;
+    color: #7a736c;
+    text-align: left;
+    cursor: pointer;
+    transition: color 0.15s;
+  }
+
+  .nav-link-active {
+    color: #1c1b19;
+    font-weight: 500;
+  }
+
+  .nav-link-active::before {
+    content: '';
+    display: inline-block;
+    width: 3px;
+    height: 3px;
+    margin-right: 0.5rem;
+    margin-bottom: 2px;
+    background: #1c1b19;
+    vertical-align: middle;
+  }
+
+  .nav-link:hover:not(.nav-link-active) {
+    color: #1c1b19;
+  }
+
+  .sidebar-member {
+    padding: 2rem;
+    border-top: 1px solid #e5e1d8;
+  }
+
+  .member-badge {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #9a948c;
+  }
+
+  .member-copy {
+    margin-top: 0.75rem;
+    font-size: 9px;
+    line-height: 1.6;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #b8b0a6;
+  }
+
+  .nav-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #e5e1d8;
+    background: #fdfcfa;
+    padding: 1rem 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .nav-topbar {
+      display: none;
+    }
+  }
+
+  .mobile-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 20;
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid #e5e1d8;
+    background: #fdfcfa;
+    padding: 0.5rem 0.25rem;
+    padding-bottom: max(0.5rem, env(safe-area-inset-bottom, 0px));
+  }
+
+  .mobile-nav-item {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 0.5rem 0.25rem;
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #9a948c;
+    cursor: pointer;
+  }
+
+  .mobile-nav-item.is-active {
+    color: #1c1b19;
+  }
+
+  /* —— Linear: focus card + data cells —— */
+  .focus-card {
+    border: 1px solid #e5e1d8;
+    background: #fdfcfa;
+  }
+
+  .focus-card-head {
+    padding: 1.5rem 2rem 0;
+  }
+
+  .focus-card-title {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #9a948c;
+  }
+
+  .focus-card-meta {
+    margin-top: 0.5rem;
+    font-size: 13px;
+    color: #7a736c;
+  }
+
+  .focus-card-body {
+    padding: 1.25rem 2rem 2rem;
+  }
+
+  .surface-card {
+    border: 1px solid #e5e1d8;
+    background: #fdfcfa;
+    border-radius: 4px;
+  }
+
+  .dashboard-grid {
+    margin-top: 0;
+  }
+
+  @media (min-width: 1024px) {
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+      gap: 3rem;
+      align-items: start;
+    }
+  }
+
+  .data-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    overflow: hidden;
+    border: 1px solid #e5e1d8;
+    background: #e5e1d8;
+  }
+
+  .data-cell {
+    background: #fdfcfa;
+    padding: 1.25rem 1.5rem;
+  }
+
+  .data-cell-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #9a948c;
+  }
+
+  .data-cell-value {
+    margin-top: 0.5rem;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 1.75rem;
+    font-weight: 500;
+    line-height: 1.1;
+    color: #1c1b19;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .data-cell-hint {
+    margin-top: 0.375rem;
+    font-size: 11px;
+    color: #9a948c;
+  }
+
+  .client-roster {
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #b8b0a6;
+    line-height: 1.8;
+  }
+
+  .btn-primary-inline {
+    display: inline-block;
+    width: auto;
+    padding: 0 1.75rem;
+  }
+
+  .table-premium {
+    width: 100%;
+    font-size: 14px;
+  }
+
+  .table-premium th {
+    padding-bottom: 1rem;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #9a948c;
+    border-bottom: 1px solid #e5e1d8;
+    text-align: left;
+  }
+
+  .table-premium td {
+    padding: 1.25rem 0;
+    color: #5c5752;
+    border-bottom: 1px solid #f0ede6;
+    vertical-align: top;
+  }
+
+  .table-premium tr:hover td {
+    color: #1c1b19;
+  }
+
+  .logo-shell {
+    border: none;
+    background: #fdfcfa;
+  }
+
+  .logo-halo {
+    padding: 1rem;
+  }
+
+  .integration-chip {
+    margin-top: 5rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e5e1d8;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: #9a948c;
+  }
+
+  .priority-line {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1.25rem 0;
+    border-bottom: 1px solid #f0ede6;
+    font-size: 15px;
+  }
+
+  .priority-line:last-child {
+    border-bottom: none;
+  }
+
+  .priority-index {
+    flex-shrink: 0;
+    width: 1.5rem;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 1.125rem;
+    font-style: italic;
+    color: #9a948c;
+  }
+
+  .signal-wine {
+    color: #6e0d25;
+  }
+}

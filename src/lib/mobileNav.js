@@ -7,8 +7,8 @@ export const MOBILE_NAV = [
   { id: SCREENS.DASHBOARD, label: 'Bugün', short: 'Bugün', glyph: '●' },
   {
     id: NAV_ACTION_OPERATOR,
-    label: 'AI',
-    short: 'AI',
+    label: 'AI Asistan',
+    short: 'Asistan',
     glyph: '◆',
     action: NAV_ACTION_OPERATOR,
   },

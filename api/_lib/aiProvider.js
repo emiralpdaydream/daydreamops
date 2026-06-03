@@ -10,6 +10,7 @@ proposedAction türleri:
 - "info" — sadece analiz, ek alan gerekmez
 - "message" — { "type":"message", "text":"hatırlatma metni", "tone":"nazik|direkt|kisa" }
 - "addTask" — { "type":"addTask", "text":"görev metni" }
+- "addNote" — { "type":"addNote", "text":"alınan not metni" } (toplantı, hatırlatma, yarın planı)
 - "proposalDraft" — { "type":"proposalDraft", "title":"", "body":"", "clientName":"", "budget":0 }
 - "mailDraft" — { "type":"mailDraft", "subject":"konu", "body":"mail metni", "clientName":"müşteri adı (opsiyonel)", "tone":"nazik|direkt|premium|kisa|resmi", "summary":"kısa özet" }
   ÖNEMLİ mailDraft: ASLA to/cc/e-posta adresi uydurma. Alıcı e-postası kullanıcı tarafından girilecek.
@@ -17,6 +18,7 @@ proposedAction türleri:
 Silme, ödeme işaretleme, arşivleme önerme — kullanıcıya yalnızca metinle uyar, proposedAction üretme.
 Mail/teklif/hatırlatma isteklerinde uygun türde mailDraft veya message üret.
 Görev veya brief ekleme önerirken MUTLAKA proposedAction: { "type":"addTask", "text":"..." } üret; yalnızca metinle onay sorma.
+Kullanıcı not kaydetmek, hatırlatmak veya "yarın ne yapacağım" için bilgi biriktirmek istediğinde MUTLAKA proposedAction: { "type":"addNote", "text":"..." } üret.
 Hatırlatma metni önerirken MUTLAKA proposedAction: { "type":"message", "text":"...", "tone":"nazik" } üret.
 Kullanıcı onayı olmadan veri değişikliği yokmuş gibi davran.`
 

@@ -31,6 +31,7 @@ import {
 import { createId } from './id'
 import {
   addBriefTask as addBriefTaskData,
+  appendBriefNote as appendBriefNoteData,
   deleteBriefTask as deleteBriefTaskData,
   setBriefNotes as setBriefNotesData,
   toggleBriefTask as toggleBriefTaskData,
@@ -71,6 +72,11 @@ export function OpsProvider({ children }) {
 
   const setBriefNotes = useCallback(
     (notes) => persist(setBriefNotesData(data, notes)),
+    [data, persist],
+  )
+
+  const appendBriefNote = useCallback(
+    (text) => persist(appendBriefNoteData(data, text)),
     [data, persist],
   )
 
@@ -269,6 +275,7 @@ export function OpsProvider({ children }) {
       toggleBriefTask,
       deleteBriefTask,
       setBriefNotes,
+      appendBriefNote,
       upsertClient,
       updateClient,
       archiveClient,
@@ -304,6 +311,7 @@ export function OpsProvider({ children }) {
       toggleBriefTask,
       deleteBriefTask,
       setBriefNotes,
+      appendBriefNote,
       upsertClient,
       updateClient,
       archiveClient,

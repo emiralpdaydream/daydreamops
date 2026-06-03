@@ -8,7 +8,8 @@ function whatsAppUrl(text) {
 }
 
 export default function ProposedActionBar({ action, onDone }) {
-  const { addBriefTask, saveProposal, createEmptyProposal } = useOps()
+  const { addBriefTask, appendBriefNote, saveProposal, createEmptyProposal } =
+    useOps()
   const { openPreview } = useMailDraft()
   const { showToast } = useToast()
 
@@ -120,6 +121,32 @@ export default function ProposedActionBar({ action, onDone }) {
           >
             WhatsApp&apos;a aktar
           </a>
+          <button type="button" className="btn-ghost" onClick={onDone}>
+            Vazgeç
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  if (action.type === 'addNote') {
+    return (
+      <div className="operator-action-bar">
+        <p className="operator-action-preview">
+          Alınan notlara eklenecek: {action.text}
+        </p>
+        <div className="operator-action-buttons">
+          <button
+            type="button"
+            className="btn-primary btn-primary-inline operator-action-confirm"
+            onClick={() => {
+              appendBriefNote(action.text)
+              showToast('Not kaydedildi.')
+              onDone?.()
+            }}
+          >
+            Notu Kaydet
+          </button>
           <button type="button" className="btn-ghost" onClick={onDone}>
             Vazgeç
           </button>

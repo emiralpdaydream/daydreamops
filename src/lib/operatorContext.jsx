@@ -10,6 +10,7 @@ import {
   isSpeechUnlockRequired,
   isSpeechUnlocked,
   isVoiceReplyEnabled,
+  primeSpeechFromUserGesture,
   setVoiceReplyEnabled,
   speak,
   stopSpeaking,
@@ -67,6 +68,10 @@ export function OperatorProvider({ children, data }) {
       const trimmed = String(text ?? '').trim()
       if (!trimmed || loading) return
 
+      if (voiceReply) {
+        primeSpeechFromUserGesture()
+      }
+
       const userMsg = { role: 'user', content: trimmed }
       const nextMessages = [...messages, userMsg]
       setMessages(nextMessages)
@@ -97,7 +102,7 @@ export function OperatorProvider({ children, data }) {
 
         runSpeakReply(reply)
       } catch (e) {
-        setError(e?.message || 'Operatör yanıt veremedi.')
+        setError(e?.message || 'AI Asistan yanıt veremedi.')
       } finally {
         setLoading(false)
       }
@@ -112,8 +117,11 @@ export function OperatorProvider({ children, data }) {
       if (!next) {
         stopSpeaking()
         setSpeaking(false)
-      } else if (next && isSpeechUnlockRequired() && !isSpeechUnlocked()) {
-        showToast('Önce Sesi Hazırla ile ses motorunu açın.')
+      } else {
+        primeSpeechFromUserGesture()
+        if (isSpeechUnlockRequired() && !isSpeechUnlocked()) {
+          showToast('iPhone: ses için 🔊 ile Sesi Hazırla\'ya dokunun.')
+        }
       }
       return next
     })
@@ -125,7 +133,7 @@ export function OperatorProvider({ children, data }) {
   }, [])
 
   const prepareVoice = useCallback(() => {
-    const started = unlockSpeech('Daydream Operator hazır.', {
+    const started = unlockSpeech('AI Asistan hazır.', {
       onStart: () => {
         setVoicePrepared(true)
         setSpeaking(true)

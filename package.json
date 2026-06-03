@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "google:sync": "node scripts/sync-google-oauth.mjs",
+    "google:sync:prod": "node scripts/sync-google-oauth.mjs --prod"
   },
   "dependencies": {
     "react": "^19.2.6",

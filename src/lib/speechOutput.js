@@ -25,9 +25,11 @@ export function isSpeechSynthesisSupported() {
 
 export function isVoiceReplyEnabled() {
   try {
-    return localStorage.getItem(STORAGE_VOICE) === '1'
+    const v = localStorage.getItem(STORAGE_VOICE)
+    if (v === null) return true
+    return v === '1'
   } catch {
-    return false
+    return true
   }
 }
 
@@ -113,6 +115,39 @@ export function isSpeaking() {
  * @param {{ onStart?: () => void, onEnd?: () => void, onError?: () => void, onBlocked?: () => void }} hooks
  * @returns {boolean} konuşma başlatıldı mı
  */
+function splitForSpeech(text) {
+  const trimmed = String(text ?? '').trim()
+  if (!trimmed) return []
+  const chunks = trimmed.match(/[^.!?\n]+[.!?\n]?/g)
+  if (!chunks || chunks.length <= 1) return [trimmed]
+  return chunks.map((c) => c.trim()).filter(Boolean)
+}
+
+/** Gönder / mikrofon gibi kullanıcı dokunuşunda — iOS async yanıt için motoru aç */
+export function primeSpeechFromUserGesture() {
+  if (!isSpeechSynthesisSupported()) return false
+  speechUnlocked = true
+  try {
+    const synth = window.speechSynthesis
+    synth.cancel()
+    if (synth.paused) synth.resume()
+    const warm = new SpeechSynthesisUtterance(' ')
+    warm.volume = 0
+    warm.rate = 10
+    synth.speak(warm)
+    window.setTimeout(() => {
+      try {
+        synth.cancel()
+      } catch {
+        /* ignore */
+      }
+    }, 40)
+  } catch {
+    /* ignore */
+  }
+  return true
+}
+
 function speakInternal(text, hooks = {}) {
   const trimmed = String(text ?? '').trim()
   if (!trimmed) {
@@ -132,35 +167,54 @@ function speakInternal(text, hooks = {}) {
 
   stopSpeaking()
 
-  const runSpeak = () => {
+  const parts = splitForSpeech(trimmed)
+  let index = 0
+  let started = false
+
+  const runNext = () => {
+    if (index >= parts.length) {
+      hooks.onEnd?.()
+      return
+    }
+
     try {
-      if (window.speechSynthesis.paused) {
-        window.speechSynthesis.resume()
-      }
+      const synth = window.speechSynthesis
+      if (synth.paused) synth.resume()
 
-      const utter = new SpeechSynthesisUtterance(trimmed)
+      const utter = new SpeechSynthesisUtterance(parts[index])
       applyUtteranceOptions(utter)
+      index += 1
 
-      utter.onstart = () => hooks.onStart?.()
-      utter.onend = () => hooks.onEnd?.()
+      utter.onstart = () => {
+        if (!started) {
+          started = true
+          hooks.onStart?.()
+        }
+      }
+      utter.onend = () => {
+        if (index < parts.length) {
+          window.setTimeout(runNext, requiresSpeechUnlock() ? 120 : 40)
+        } else {
+          hooks.onEnd?.()
+        }
+      }
       utter.onerror = () => {
         hooks.onError?.()
         hooks.onEnd?.()
       }
 
-      window.speechSynthesis.speak(utter)
-      return true
+      synth.speak(utter)
     } catch {
       hooks.onError?.()
       hooks.onEnd?.()
-      return false
     }
   }
 
-  if (requiresSpeechUnlock()) {
-    window.setTimeout(runSpeak, 50)
+  const delay = requiresSpeechUnlock() ? 80 : 0
+  if (delay) {
+    window.setTimeout(runNext, delay)
   } else {
-    runSpeak()
+    runNext()
   }
 
   return true
@@ -170,7 +224,7 @@ function speakInternal(text, hooks = {}) {
  * Kullanıcı dokunuşu (Sesi Hazırla) — iOS speech engine unlock.
  * @returns {boolean}
  */
-export function unlockSpeech(text = 'Daydream Operator hazır.', hooks = {}) {
+export function unlockSpeech(text = 'AI Asistan hazır.', hooks = {}) {
   if (!isSpeechSynthesisSupported()) {
     hooks.onBlocked?.()
     return false

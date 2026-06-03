@@ -21,7 +21,7 @@ export async function callOperator({
   const body = await res.json().catch(() => ({}))
 
   if (!res.ok) {
-    throw new Error(body.error || 'Operatör yanıt veremedi.')
+    throw new Error(body.error || 'AI Asistan yanıt veremedi.')
   }
 
   return {

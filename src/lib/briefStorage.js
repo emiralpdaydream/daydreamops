@@ -152,3 +152,19 @@ export function setBriefNotes(data, notes) {
   next.brief = { ...next.brief, notes: notes ?? '' }
   return next
 }
+
+/** Alınan notlara zaman damgalı satır ekler */
+export function appendBriefNote(data, text) {
+  const t = String(text ?? '').trim()
+  if (!t) return ensureBriefData({ ...data })
+  const next = ensureBriefData({ ...data })
+  const stamp = new Date().toLocaleTimeString('tr-TR', {
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+  const line = `• ${stamp} — ${t}`
+  const prev = String(next.brief.notes ?? '').trim()
+  const notes = prev ? `${prev}\n${line}` : line
+  next.brief = { ...next.brief, notes }
+  return next
+}

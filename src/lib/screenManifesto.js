@@ -7,7 +7,7 @@ export const SCREEN_INTRO = {
   today: {
     chapter: 'Odak',
     title: 'Brief',
-    purpose: 'Günlük görevler ve serbest notlar.',
+    purpose: 'Günlük görevler ve alınan notlar.',
   },
   crm: {
     chapter: 'Portföy',

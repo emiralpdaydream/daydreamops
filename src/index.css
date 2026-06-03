@@ -1,5 +1,6 @@
 @import './styles/tokens-and-modes.css';
 @import './styles/mobile-pwa.css';
+@import './styles/ai-chat.css';
 
 @tailwind base;
 @tailwind components;
@@ -1056,6 +1057,17 @@
     object-fit: contain;
     object-position: left center;
     mix-blend-mode: multiply;
+  }
+
+  .logo-mark__img--on-dark {
+    mix-blend-mode: normal;
+  }
+
+  .logo-mark--avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
   }
 
   .login-scene {

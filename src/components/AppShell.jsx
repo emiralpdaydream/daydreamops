@@ -68,7 +68,7 @@ export default function AppShell({
               className="btn-outline operator-topbar-btn operator-topbar-btn--web-only"
               onClick={() => setOpen(true)}
             >
-              Operator
+              AI Asistan
             </button>
             <button type="button" onClick={onLogout} className="btn-ghost">
               Çıkış

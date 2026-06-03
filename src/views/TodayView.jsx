@@ -1,28 +1,23 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useOps } from '../lib/useOps'
 import { getTodayBriefRecord, sortBriefTasks } from '../lib/briefSelectors'
 import { SCREEN_INTRO } from '../lib/screenManifesto'
 import PageHeader from '../components/PageHeader'
-
-const NOTES_DEBOUNCE_MS = 400
+import CollectedNotesSection from '../components/CollectedNotesSection'
 
 export default function TodayView() {
-  const { data, addBriefTask, toggleBriefTask, deleteBriefTask, setBriefNotes } =
-    useOps()
+  const {
+    data,
+    addBriefTask,
+    toggleBriefTask,
+    deleteBriefTask,
+    setBriefNotes,
+    appendBriefNote,
+  } = useOps()
   const brief = getTodayBriefRecord(data)
   const tasks = sortBriefTasks(brief.tasks)
 
   const [newTask, setNewTask] = useState('')
-  const [notes, setNotes] = useState(() => brief.notes ?? '')
-
-  useEffect(() => {
-    const timer = window.setTimeout(() => {
-      if (notes !== (brief.notes ?? '')) {
-        setBriefNotes(notes)
-      }
-    }, NOTES_DEBOUNCE_MS)
-    return () => window.clearTimeout(timer)
-  }, [notes, brief.notes, setBriefNotes])
 
   function handleAddTask(e) {
     e.preventDefault()
@@ -97,18 +92,19 @@ export default function TodayView() {
         )}
       </section>
 
-      <section className="panel-premium section-gap max-w-editorial p-6 md:p-8">
-        <h2 className="label-premium">Serbest notlar</h2>
+      <section className="panel-premium section-gap max-w-editorial p-6 md:p-8 collected-notes-panel">
+        <h2 className="label-premium">Alınan notlar</h2>
         <p className="mt-2 text-sm text-dim">
-          Toplantı notları, hatırlatmalar — otomatik kaydedilir.
+          Toplantı, plan ve hatırlatmalar — AI Asistan da onayınızla buraya
+          ekleyebilir. Otomatik kaydedilir.
         </p>
-        <textarea
-          className="input-premium mt-6 min-h-[120px] w-full max-w-full"
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          placeholder="Bugün veya yarın için notlarınız…"
-          aria-label="Serbest notlar"
-        />
+        <div className="mt-6">
+          <CollectedNotesSection
+            notes={brief.notes ?? ''}
+            onSaveNotes={setBriefNotes}
+            onAppendNote={appendBriefNote}
+          />
+        </div>
       </section>
     </main>
   )

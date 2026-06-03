@@ -35,7 +35,7 @@ export default function OperatorDashboardCard() {
   return (
     <section className="operator-dashboard-card animate-rise">
       <div className="operator-dashboard-card__head">
-        <p className="operator-dashboard-card__eyebrow">Daydream Operator</p>
+        <p className="operator-dashboard-card__eyebrow">AI Asistan</p>
         <h2 className="operator-dashboard-card__title">
           Operasyon asistanınız
         </h2>
@@ -51,7 +51,7 @@ export default function OperatorDashboardCard() {
           className="btn-primary btn-primary-inline operator-dashboard-card__cta"
           onClick={() => setOpen(true)}
         >
-          Operatörü Aç
+          AI Asistanı Aç
         </button>
         <button
           type="button"

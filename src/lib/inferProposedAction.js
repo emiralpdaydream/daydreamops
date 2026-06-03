@@ -50,12 +50,24 @@ export function inferProposedAction(reply, proposedAction, lastUserMessage) {
   }
 
   if (
+    /not(lar)?|kaydet|kaydedelim|hatırlat|yazalım|alınan|notlarıma|notuma/i.test(
+      lower,
+    ) &&
+    !/mail|e-posta|görev|brief list/i.test(lower)
+  ) {
+    const noteText =
+      extractQuoted(text) ||
+      text.replace(/\s*onaylıyor musunuz\??\s*$/i, '').trim().slice(0, 2000)
+    return { type: 'addNote', text: noteText }
+  }
+
+  if (
     /brief|görev|listeye|yapılacaklar|bugünkü|ekleyelim|eklememi/i.test(lower)
   ) {
     const taskText =
       extractQuoted(text) ||
       extractTaskFromUser(lastUserMessage) ||
-      'Operatör önerisi'
+      'AI önerisi'
     return { type: 'addTask', text: taskText }
   }
 

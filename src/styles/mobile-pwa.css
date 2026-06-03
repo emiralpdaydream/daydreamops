@@ -141,7 +141,8 @@ html[data-effective-view='mobile'] .operator-panel {
   border-bottom: none;
 }
 
-html[data-effective-view='mobile'] .operator-panel__foot {
+html[data-effective-view='mobile'] .operator-panel__foot,
+html[data-effective-view='mobile'] .ai-chat-compose-wrap {
   padding-bottom: max(0.85rem, env(safe-area-inset-bottom, 0px));
 }
 

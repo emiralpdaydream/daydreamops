@@ -12,13 +12,13 @@ export default function AppSidebar({ screen, onNavigate, onOpenOperator }) {
 
       <nav className="sidebar-nav">
         <div className="nav-group">
-          <p className="nav-group-label">Operatör</p>
+          <p className="nav-group-label">AI</p>
           <button
             type="button"
             onClick={onOpenOperator}
             className="nav-link nav-link-operator"
           >
-            Daydream Operator
+            AI Asistan
           </button>
         </div>
         {NAV_GROUPS.map((group) => (

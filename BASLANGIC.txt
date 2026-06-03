@@ -12,9 +12,22 @@ TEK SEFER (ilk kurulum)
    veya
    GOOGLE_API_KEY=...           (Google Gemini / AI Studio)
 
-3. Kaydedin (Ctrl+S)
+3. Gmail / Google OAuth (client_secret_*.json dosyanız proje kökündeyse):
 
-Canlı site (Vercel): aynı isimlerle Environment Variables → sonra Redeploy.
+   npm run google:sync
+
+   Bu komut JSON'dan GOOGLE_CLIENT_ID ve GOOGLE_CLIENT_SECRET değerlerini
+   .env.local dosyasına yazar. client_secret*.json Git'e gitmez.
+
+   Google Cloud Console → OAuth istemcisi → Authorized redirect URIs:
+     http://localhost:5173/api/google/callback
+     https://SIZIN-DOMAIN.vercel.app/api/google/callback
+
+4. Kaydedin (Ctrl+S)
+
+Canlı site (Vercel):
+  npm run google:sync:prod   (veya değerleri elle kopyalayın)
+  Project → Settings → Environment Variables → Redeploy
 
 
 HER GÜN / BİLGİSAYAR YENİDEN AÇILINCA
@@ -30,15 +43,15 @@ HER GÜN / BİLGİSAYAR YENİDEN AÇILINCA
 4. Şifre → Merkez (Bugün) veya alt menüden AI / Brief / Finans
 
 
-DAYDREAM OPERATOR
------------------
-- Merkez ekranında üstte kart → Operatörü Aç
-- Mobilde sağ alttaki Operator FAB veya alt menü "AI"
-- Ayarlar → Bağlantılar Merkezi → OpenAI "Bağlantıyı Test Et"
+AI ASISTAN & GMAIL
+------------------
+- Alt menü veya üst bar: AI Asistan
+- Ayarlar → Bağlantılar Merkezi → Gmail → Bağla / Test
+- .env değiştirdiyseniz: Ctrl+C → npm run dev tekrar
 
 
 SORUN OLURSA
 ------------
-- .env değiştirdiyseniz: Ctrl+C → npm run dev tekrar
 - Canlıda AI: Vercel → OPENAI_API_KEY → redeploy
-- Google Drive/Gmail (sonraki faz): GOOGLE_CLIENT_ID + GOOGLE_CLIENT_SECRET
+- Gmail "OAuth eksik": npm run google:sync veya Vercel'de GOOGLE_* değişkenleri
+- JSON veya secret sohbete yapıştırmayın; sızdıysa Google Console'dan yeni secret üretin

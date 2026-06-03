@@ -8,6 +8,7 @@ const ALLOWED_ACTION_TYPES = new Set([
   'info',
   'message',
   'addTask',
+  'addNote',
   'proposalDraft',
   'mailDraft',
 ])
@@ -49,6 +50,11 @@ function sanitizeProposedAction(action) {
     const text = String(action.text ?? '').trim().slice(0, 500)
     if (!text) return undefined
     return { type: 'addTask', text }
+  }
+  if (type === 'addNote') {
+    const text = String(action.text ?? '').trim().slice(0, 2000)
+    if (!text) return undefined
+    return { type: 'addNote', text }
   }
   if (type === 'proposalDraft') {
     const body = String(action.body ?? '').trim().slice(0, 8000)

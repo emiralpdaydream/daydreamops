@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import BrandMark from './BrandMark'
+import CollectedNotesSection from './CollectedNotesSection'
+import Logo from './Logo'
 import ProposedActionBar from './ProposedActionBar'
+import { getTodayBriefRecord } from '../lib/briefSelectors'
+import { useOps } from '../lib/useOps'
 import { useOperator } from '../lib/useOperator'
 import { OPERATOR_PRESETS } from '../lib/operatorPresets'
 import {
@@ -11,6 +14,7 @@ import {
 import {
   isSpeechSynthesisSupported,
   isSpeechUnlockRequired,
+  primeSpeechFromUserGesture,
 } from '../lib/speechOutput'
 
 export default function DaydreamOperatorPanel() {
@@ -33,9 +37,12 @@ export default function DaydreamOperatorPanel() {
     prepareVoice,
   } = useOperator()
 
+  const { data, setBriefNotes, appendBriefNote } = useOps()
+  const brief = getTodayBriefRecord(data)
   const scrollRef = useRef(null)
   const recRef = useRef(null)
   const [dismissedActionId, setDismissedActionId] = useState(null)
+  const [panelTab, setPanelTab] = useState('chat')
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -56,19 +63,19 @@ export default function DaydreamOperatorPanel() {
 
   function handleSubmit(e) {
     e.preventDefault()
+    if (voiceReply) primeSpeechFromUserGesture()
     sendMessage(input)
   }
 
   function handleMic() {
-    if (!isSpeechRecognitionSupported()) {
-      return
-    }
+    if (!isSpeechRecognitionSupported()) return
     if (listening) {
       stopListening(recRef.current)
       recRef.current = null
       setListening(false)
       return
     }
+    primeSpeechFromUserGesture()
     setListening(true)
     recRef.current = startListening({
       onResult: (text) => {
@@ -80,172 +87,232 @@ export default function DaydreamOperatorPanel() {
     })
   }
 
+  const showEmpty = messages.length === 0 && !loading
+
   return (
-    <div className="operator-overlay" role="dialog" aria-label="Daydream Operator">
+    <div className="operator-overlay" role="dialog" aria-label="AI Asistan">
       <button
         type="button"
         className="operator-overlay__backdrop"
         aria-label="Kapat"
         onClick={() => setOpen(false)}
       />
-      <aside className="operator-panel">
-        <header className="operator-panel__head">
-          <div className="operator-panel__brand">
-            <BrandMark />
-            <div>
-              <h2 className="operator-panel__title">Daydream Operator</h2>
-              <p className="operator-panel__sub">
-                Operasyonu analiz eder, not alır, önerir ve onayınla aksiyon
-                alır.
-              </p>
-            </div>
+      <aside className="operator-panel ai-chat-panel">
+        <header className="ai-chat-head">
+          <div className="ai-chat-head__brand">
+            <Logo variant="avatar" className="ai-chat-head__logo" />
+            <h2 className="ai-chat-head__title">AI Asistan</h2>
           </div>
-          <button
-            type="button"
-            className="btn-ghost shrink-0"
-            onClick={() => setOpen(false)}
-          >
-            Kapat
-          </button>
-        </header>
-
-        <div className="operator-presets">
-          {OPERATOR_PRESETS.map((label) => (
-            <button
-              key={label}
-              type="button"
-              className="operator-chip"
-              disabled={loading}
-              onClick={() => sendMessage(label)}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-
-        <div ref={scrollRef} className="operator-chat">
-          {messages.length === 0 && (
-            <p className="operator-chat-empty">
-              Soru sorun veya hızlı komut seçin. Verileriniz özet halinde
-              analiz edilir; değişiklikler yalnızca onayınızla uygulanır.
-            </p>
-          )}
-          {messages.map((msg, i) => {
-            const isUser = msg.role === 'user'
-            const actionKey = `${i}-${msg.proposedAction?.type ?? ''}`
-            const showAction =
-              !isUser &&
-              msg.proposedAction &&
-              dismissedActionId !== actionKey
-
-            return (
-              <div
-                key={`${msg.role}-${i}`}
-                className={
-                  isUser ? 'operator-msg operator-msg--user' : 'operator-msg'
-                }
-              >
-                <p>{msg.content}</p>
-                {showAction && (
-                  <ProposedActionBar
-                    action={msg.proposedAction}
-                    onDone={() => setDismissedActionId(actionKey)}
-                  />
-                )}
-              </div>
-            )
-          })}
-          {loading && (
-            <p className="operator-chat-status">Operatör düşünüyor…</p>
-          )}
-          {error && <p className="operator-chat-error">{error}</p>}
-        </div>
-
-        <footer className="operator-panel__foot">
-          <div className="operator-voice-row">
-            {isSpeechSynthesisSupported() ? (
+          <div className="ai-chat-head__tools">
+            {isSpeechSynthesisSupported() && (
               <>
                 {isSpeechUnlockRequired() && !voicePrepared && (
                   <button
                     type="button"
-                    className="btn-outline operator-voice-prepare"
+                    className="ai-chat-icon-btn"
                     onClick={prepareVoice}
+                    title="Ses motorunu aç (iPhone)"
                   >
-                    Sesi Hazırla
+                    🔊
                   </button>
                 )}
                 <button
                   type="button"
-                  className={`operator-voice-toggle${voiceReply ? ' is-on' : ''}`}
+                  className={`ai-chat-icon-btn${voiceReply ? ' is-on' : ''}`}
                   onClick={toggleVoiceReply}
                   title={
-                    isSpeechUnlockRequired() && !voicePrepared
-                      ? 'Önce Sesi Hazırla ile iOS ses iznini verin'
-                      : undefined
+                    voiceReply
+                      ? 'Sesli yanıt açık'
+                      : 'Sesli yanıt kapalı'
                   }
+                  aria-pressed={voiceReply}
                 >
-                  Sesli Yanıt: {voiceReply ? 'Açık' : 'Kapalı'}
+                  {voiceReply ? '🔈' : '🔇'}
                 </button>
-                {isSpeechUnlockRequired() && !voicePrepared && voiceReply && (
-                  <span className="operator-foot-note">
-                    iPhone: sesli yanıt için önce Sesi Hazırla&apos;ya dokunun.
-                  </span>
-                )}
               </>
-            ) : (
-              <span className="operator-foot-note">
-                Bu cihazda sesli yanıt desteklenmiyor.
-              </span>
             )}
-            {speaking && (
-              <span className="operator-speaking">
-                <span className="operator-pulse" aria-hidden />
-                Konuşuyor…
-                <button type="button" className="btn-ghost" onClick={stopVoice}>
-                  Durdur
-                </button>
-              </span>
-            )}
-          </div>
-
-          <form className="operator-compose" onSubmit={handleSubmit}>
             <button
               type="button"
-              className={`operator-mic${listening ? ' is-active' : ''}`}
+              className="ai-chat-icon-btn"
+              onClick={() => setOpen(false)}
+              aria-label="Kapat"
+            >
+              ✕
+            </button>
+          </div>
+        </header>
+
+        <div className="ai-chat-tabs" role="tablist">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={panelTab === 'chat'}
+            className={`ai-chat-tab${panelTab === 'chat' ? ' is-active' : ''}`}
+            onClick={() => setPanelTab('chat')}
+          >
+            Sohbet
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={panelTab === 'notes'}
+            className={`ai-chat-tab${panelTab === 'notes' ? ' is-active' : ''}`}
+            onClick={() => setPanelTab('notes')}
+          >
+            Alınan notlar
+          </button>
+        </div>
+
+        {panelTab === 'notes' ? (
+          <CollectedNotesSection
+            compact
+            notes={brief.notes ?? ''}
+            onSaveNotes={setBriefNotes}
+            onAppendNote={appendBriefNote}
+          />
+        ) : (
+          <>
+        <div ref={scrollRef} className="ai-chat-scroll">
+          <div className="ai-chat-thread">
+            {showEmpty && (
+              <div className="ai-chat-welcome">
+                <p className="ai-chat-welcome__title">Merhaba</p>
+                <p className="ai-chat-welcome__sub">
+                  Operasyon verilerinizi özetler, önerir ve onayınızla işlem
+                  önerir.
+                </p>
+                <div className="ai-chat-suggestions">
+                  {OPERATOR_PRESETS.map((label) => (
+                    <button
+                      key={label}
+                      type="button"
+                      className="ai-chat-suggestion"
+                      disabled={loading}
+                      onClick={() => sendMessage(label)}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {messages.map((msg, i) => {
+              const isUser = msg.role === 'user'
+              const actionKey = `${i}-${msg.proposedAction?.type ?? ''}`
+              const showAction =
+                !isUser &&
+                msg.proposedAction &&
+                dismissedActionId !== actionKey
+
+              return (
+                <div
+                  key={`${msg.role}-${i}`}
+                  className={
+                    isUser
+                      ? 'ai-chat-row ai-chat-row--user'
+                      : 'ai-chat-row ai-chat-row--assistant'
+                  }
+                >
+                  {isUser ? (
+                    <span className="ai-chat-avatar" aria-hidden>
+                      S
+                    </span>
+                  ) : (
+                    <span className="ai-chat-avatar ai-chat-avatar--logo" aria-hidden>
+                      <Logo variant="avatar" />
+                    </span>
+                  )}
+                  <div className="ai-chat-bubble">
+                    <p className="ai-chat-bubble__text">{msg.content}</p>
+                    {showAction && (
+                      <ProposedActionBar
+                        action={msg.proposedAction}
+                        onDone={() => setDismissedActionId(actionKey)}
+                      />
+                    )}
+                  </div>
+                </div>
+              )
+            })}
+
+            {loading && (
+              <div className="ai-chat-row ai-chat-row--assistant">
+                <span className="ai-chat-avatar ai-chat-avatar--logo" aria-hidden>
+                  <Logo variant="avatar" />
+                </span>
+                <div className="ai-chat-bubble ai-chat-bubble--typing">
+                  <span className="ai-chat-dots" aria-hidden>
+                    <span />
+                    <span />
+                    <span />
+                  </span>
+                  <span className="sr-only">Yanıt hazırlanıyor</span>
+                </div>
+              </div>
+            )}
+
+            {error && <p className="ai-chat-error">{error}</p>}
+          </div>
+        </div>
+
+        <footer className="ai-chat-compose-wrap">
+          {speaking && (
+            <div className="ai-chat-speaking-bar">
+              <span className="operator-pulse" aria-hidden />
+              Sesli okunuyor…
+              <button type="button" className="btn-ghost" onClick={stopVoice}>
+                Durdur
+              </button>
+            </div>
+          )}
+          {isSpeechUnlockRequired() && voiceReply && !voicePrepared && (
+            <p className="ai-chat-hint">
+              iPhone: ses için üstteki 🔊 ile &quot;Sesi Hazırla&quot;ya
+              dokunun.
+            </p>
+          )}
+          <form className="ai-chat-compose" onSubmit={handleSubmit}>
+            <button
+              type="button"
+              className={`ai-chat-compose__mic${listening ? ' is-active' : ''}`}
               onClick={handleMic}
               disabled={!isSpeechRecognitionSupported() || loading}
-              title={
-                isSpeechRecognitionSupported()
-                  ? 'Sesli giriş'
-                  : 'Bu tarayıcıda sesli giriş desteklenmiyor.'
-              }
-              aria-label="Mikrofon"
+              aria-label="Sesli giriş"
             >
-              ◉
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                <path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.71V21h2v-3.29A7 7 0 0 0 19 11h-2z" />
+              </svg>
             </button>
-            <input
-              type="text"
-              className="operator-input"
+            <textarea
+              rows={1}
+              className="ai-chat-compose__input"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Operatöre yazın…"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault()
+                  handleSubmit(e)
+                }
+              }}
+              placeholder="Mesaj yazın…"
               disabled={loading}
               autoComplete="off"
             />
             <button
               type="submit"
-              className="btn-primary btn-primary-inline shrink-0"
+              className="ai-chat-compose__send"
               disabled={loading || !input.trim()}
+              aria-label="Gönder"
             >
-              Gönder
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+              </svg>
             </button>
           </form>
-          {!isSpeechRecognitionSupported() && (
-            <p className="operator-foot-note">
-              Bu tarayıcıda sesli giriş desteklenmiyor.
-            </p>
-          )}
         </footer>
+          </>
+        )}
       </aside>
     </div>
   )

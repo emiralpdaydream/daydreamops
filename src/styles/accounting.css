@@ -1,0 +1,394 @@
+/* Muhasebe — kontrast ve mobil */
+
+.page-main--accounting {
+  padding-bottom: calc(var(--nav-total-height, 4.5rem) + 1rem);
+}
+
+.accounting-tabs {
+  display: flex;
+  gap: 0.35rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 0.25rem;
+  margin-bottom: 1rem;
+  scrollbar-width: none;
+}
+
+.accounting-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.accounting-tab {
+  flex-shrink: 0;
+  min-height: 44px;
+  padding: 0.5rem 0.85rem;
+  border: 1px solid var(--color-border, #d8d0c3);
+  border-radius: 999px;
+  background: transparent;
+  font-family: Inter, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-secondary, #6f6961);
+  cursor: pointer;
+}
+
+.accounting-tab.is-active {
+  background: var(--color-burgundy, #5c1a28);
+  border-color: var(--color-burgundy, #5c1a28);
+  color: #fff;
+}
+
+.accounting-add-cta {
+  width: 100%;
+  min-height: 48px;
+  margin-bottom: 1.25rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--color-border, #d8d0c3);
+  border-radius: 10px;
+  background: var(--color-surface-elevated, #fff);
+  font-family: Inter, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text, #171615);
+  text-align: left;
+  cursor: pointer;
+}
+
+.accounting-add-cta:hover {
+  border-color: var(--color-burgundy, #5c1a28);
+}
+
+.accounting-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.accounting-empty {
+  margin: 2rem 0;
+  text-align: center;
+  font-size: 15px;
+  color: var(--color-text-secondary, #6f6961);
+}
+
+.accounting-card {
+  border: 1px solid var(--color-border, #d8d0c3);
+  border-radius: 12px;
+  background: var(--color-surface-elevated, #fff);
+  overflow: hidden;
+}
+
+.accounting-card__body {
+  padding: 1rem 1rem 0.65rem;
+}
+
+.accounting-card__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.accounting-card__title {
+  margin: 0;
+  font-family: Inter, sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text, #171615);
+}
+
+.accounting-card__amount {
+  margin: 0.35rem 0 0;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--color-text, #171615);
+}
+
+.accounting-card__meta {
+  margin: 0.25rem 0 0;
+  font-size: 14px;
+  color: var(--color-text-secondary, #6f6961);
+}
+
+.accounting-card__note {
+  margin: 0.5rem 0 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--color-text-muted, #8f887e);
+}
+
+.accounting-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding: 0.65rem 0.75rem 0.75rem;
+  border-top: 1px solid var(--color-border, #d8d0c3);
+}
+
+.accounting-action-btn {
+  min-height: 44px;
+  font-size: 13px;
+}
+
+.accounting-pill {
+  flex-shrink: 0;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: #ebe8e2;
+  color: #6f6961;
+}
+
+.accounting-pill--urgent {
+  background: rgba(122, 16, 40, 0.12);
+  color: #7a1028;
+}
+
+.accounting-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+  gap: 0.65rem;
+  margin-bottom: 1.25rem;
+}
+
+.accounting-summary-card {
+  padding: 0.85rem;
+  border: 1px solid var(--color-border, #d8d0c3);
+  border-radius: 10px;
+  background: var(--color-surface-elevated, #fff);
+}
+
+.accounting-summary-card--highlight {
+  border-color: var(--color-burgundy, #5c1a28);
+  grid-column: 1 / -1;
+}
+
+.accounting-summary-card__label {
+  display: block;
+  font-size: 12px;
+  color: var(--color-text-secondary, #6f6961);
+}
+
+.accounting-summary-card__value {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text, #171615);
+}
+
+.accounting-source-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.accounting-source-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid var(--color-border, #d8d0c3);
+  font-size: 15px;
+  color: var(--color-text, #171615);
+}
+
+.accounting-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+@media (min-width: 768px) {
+  .accounting-modal-overlay {
+    align-items: center;
+    padding: 1rem;
+  }
+}
+
+.accounting-modal-overlay__backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(12, 11, 10, 0.5);
+  cursor: pointer;
+}
+
+.accounting-modal-panel {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 28rem;
+  max-height: 90dvh;
+  border-radius: 14px 14px 0 0;
+  background: var(--color-surface, #f3f0ea);
+  border: 1px solid var(--color-border, #d8d0c3);
+}
+
+@media (min-width: 768px) {
+  .accounting-modal-panel {
+    border-radius: 14px;
+  }
+}
+
+.accounting-modal-panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  border-bottom: 1px solid var(--color-border, #d8d0c3);
+}
+
+.accounting-modal-panel__head h2 {
+  margin: 0;
+  font-family: Inter, sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text, #171615);
+}
+
+.accounting-modal-panel__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.accounting-modal-panel__foot {
+  display: flex;
+  gap: 0.5rem;
+  padding: 1rem;
+  padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--color-border, #d8d0c3);
+}
+
+.accounting-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.accounting-field span {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-secondary, #6f6961);
+}
+
+.accounting-field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+}
+
+.accounting-input {
+  min-height: 44px;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--color-border, #d8d0c3);
+  border-radius: 8px;
+  background: #fff;
+  font-family: Inter, sans-serif;
+  font-size: 16px;
+  color: var(--color-text, #171615);
+}
+
+.accounting-input::placeholder {
+  color: var(--color-text-muted, #8f887e);
+  opacity: 1;
+}
+
+.accounting-input--area {
+  min-height: 5rem;
+  resize: vertical;
+}
+
+.accounting-field--check {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.accounting-btn {
+  flex: 1;
+  min-height: 44px;
+}
+
+.dashboard-accounting-card {
+  padding: 1.25rem;
+}
+
+.dashboard-accounting-card__alert {
+  margin: 0.35rem 0 0;
+  font-size: 13px;
+  color: #7a1028;
+}
+
+.dashboard-accounting-card__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+.dashboard-accounting-card__label {
+  display: block;
+  font-size: 12px;
+  color: var(--color-text-secondary, #6f6961);
+}
+
+.dashboard-accounting-card__value {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text, #171615);
+}
+
+.dashboard-accounting-card__cell--net .dashboard-accounting-card__value {
+  color: var(--color-burgundy, #5c1a28);
+}
+
+.dashboard-accounting-card__cta {
+  width: 100%;
+  min-height: 44px;
+}
+
+html[data-theme='night'] .accounting-card,
+html[data-theme='night'] .accounting-summary-card,
+html[data-theme='night'] .accounting-add-cta {
+  background: #1e1d1b;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+html[data-theme='night'] .accounting-card__title,
+html[data-theme='night'] .accounting-card__amount,
+html[data-theme='night'] .accounting-summary-card__value,
+html[data-theme='night'] .accounting-source-row,
+html[data-theme='night'] .accounting-modal-panel__head h2 {
+  color: #f7f3ea;
+}
+
+html[data-theme='night'] .accounting-card__meta,
+html[data-theme='night'] .accounting-field span,
+html[data-theme='night'] .accounting-summary-card__label {
+  color: #c8c0b4;
+}
+
+html[data-theme='night'] .accounting-input {
+  background: #141312;
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #f7f3ea;
+}
+
+html[data-theme='night'] .accounting-modal-panel {
+  background: #141312;
+}

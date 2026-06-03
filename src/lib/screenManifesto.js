@@ -24,10 +24,10 @@ export const SCREEN_INTRO = {
     title: 'Gelecek projeler',
     purpose: 'Sırada ne var?',
   },
-  tahsilat: {
-    chapter: 'Finans',
-    title: 'Tahsilat',
-    purpose: 'Kim para ödemedi?',
+  muhasebe: {
+    chapter: 'Muhasebe',
+    title: 'Muhasebe',
+    purpose: 'Alınacaklar, ödemeler, harcamalar ve nakit özeti.',
   },
   teklif: {
     chapter: 'Teklif',

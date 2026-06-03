@@ -30,6 +30,19 @@ import {
 } from './storage'
 import { createId } from './id'
 import {
+  clearAccountingDemo,
+  deferPayable,
+  deleteExpense,
+  deletePayable,
+  deleteReceivable,
+  markPayablePaid,
+  markReceivableReceived,
+  markReceivableReminderSent,
+  upsertExpense,
+  upsertPayable,
+  upsertReceivable,
+} from './accountingStorage'
+import {
   addBriefTask as addBriefTaskData,
   appendBriefNote as appendBriefNoteData,
   deleteBriefTask as deleteBriefTaskData,
@@ -77,6 +90,47 @@ export function OpsProvider({ children }) {
 
   const appendBriefNote = useCallback(
     (text) => persist(appendBriefNoteData(data, text)),
+    [data, persist],
+  )
+
+  const saveReceivable = useCallback(
+    (input, id) => persist(upsertReceivable(data, input, id)),
+    [data, persist],
+  )
+  const removeReceivable = useCallback(
+    (id) => persist(deleteReceivable(data, id)),
+    [data, persist],
+  )
+  const savePayable = useCallback(
+    (input, id) => persist(upsertPayable(data, input, id)),
+    [data, persist],
+  )
+  const removePayable = useCallback(
+    (id) => persist(deletePayable(data, id)),
+    [data, persist],
+  )
+  const saveExpense = useCallback(
+    (input, id) => persist(upsertExpense(data, input, id)),
+    [data, persist],
+  )
+  const removeExpense = useCallback(
+    (id) => persist(deleteExpense(data, id)),
+    [data, persist],
+  )
+  const receiveReceivable = useCallback(
+    (id, partial) => persist(markReceivableReceived(data, id, partial)),
+    [data, persist],
+  )
+  const payPayable = useCallback(
+    (id) => persist(markPayablePaid(data, id)),
+    [data, persist],
+  )
+  const deferPayableRecord = useCallback(
+    (id) => persist(deferPayable(data, id)),
+    [data, persist],
+  )
+  const sendReceivableReminder = useCallback(
+    (id) => persist(markReceivableReminderSent(data, id)),
     [data, persist],
   )
 
@@ -252,7 +306,7 @@ export function OpsProvider({ children }) {
   }, [])
 
   const resetDemo = useCallback(() => {
-    return persist(resetDemoData(data))
+    return persist(clearAccountingDemo(resetDemoData(data)))
   }, [data, persist])
 
   const clearPaymentsOnly = useCallback(() => {
@@ -276,6 +330,16 @@ export function OpsProvider({ children }) {
       deleteBriefTask,
       setBriefNotes,
       appendBriefNote,
+      saveReceivable,
+      removeReceivable,
+      savePayable,
+      removePayable,
+      saveExpense,
+      removeExpense,
+      receiveReceivable,
+      payPayable,
+      deferPayableRecord,
+      sendReceivableReminder,
       upsertClient,
       updateClient,
       archiveClient,
@@ -312,6 +376,16 @@ export function OpsProvider({ children }) {
       deleteBriefTask,
       setBriefNotes,
       appendBriefNote,
+      saveReceivable,
+      removeReceivable,
+      savePayable,
+      removePayable,
+      saveExpense,
+      removeExpense,
+      receiveReceivable,
+      payPayable,
+      deferPayableRecord,
+      sendReceivableReminder,
       upsertClient,
       updateClient,
       archiveClient,

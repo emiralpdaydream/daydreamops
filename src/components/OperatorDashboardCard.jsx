@@ -1,4 +1,5 @@
 import { useOps } from '../lib/useOps'
+import { getAccountingSummary } from '../lib/accountingSelectors'
 import { buildDataSnapshot } from '../lib/buildDataSnapshot'
 import { useOperator } from '../lib/useOperator'
 import { getDashboardStats } from '../lib/selectors'
@@ -14,8 +15,9 @@ function buildLocalSummary(data) {
   if (stats.briefDone > 0 && stats.briefTotal > 0) {
     parts.push(`${stats.briefDone} tamamlandı`)
   }
-  if (snap.overduePayments?.length > 0) {
-    parts.push(`${snap.overduePayments.length} gecikmiş tahsilat`)
+  const acc = getAccountingSummary(data)
+  if (acc.attentionCount > 0) {
+    parts.push(`${acc.attentionCount} muhasebe uyarısı`)
   }
   const draftCount = (snap.proposals ?? []).filter((p) => !p.hasText).length
   if (draftCount > 0) {

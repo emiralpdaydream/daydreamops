@@ -35,6 +35,7 @@ export default function DaydreamOperatorPanel() {
     toggleVoiceReply,
     stopVoice,
     prepareVoice,
+    testVoice,
   } = useOperator()
 
   const { data, setBriefNotes, appendBriefNote } = useOps()
@@ -111,11 +112,19 @@ export default function DaydreamOperatorPanel() {
                     type="button"
                     className="ai-chat-icon-btn"
                     onClick={prepareVoice}
-                    title="Ses motorunu aç (iPhone)"
+                    title="Sesi Hazırla (iPhone)"
                   >
                     🔊
                   </button>
                 )}
+                <button
+                  type="button"
+                  className="ai-chat-icon-btn"
+                  onClick={testVoice}
+                  title="Ses testi"
+                >
+                  ▶
+                </button>
                 <button
                   type="button"
                   className={`ai-chat-icon-btn${voiceReply ? ' is-on' : ''}`}

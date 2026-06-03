@@ -62,6 +62,34 @@ export function inferProposedAction(reply, proposedAction, lastUserMessage) {
   }
 
   if (
+    /alacak|alınacak|tahsil|ödeme ekle|harcama ekle|muhasebe kayıt/i.test(lower) &&
+    /ekle|kaydet|oluştur/i.test(lower)
+  ) {
+    if (/harcama|gider/i.test(lower)) {
+      return {
+        type: 'addExpense',
+        title: extractQuoted(text) || extractTaskFromUser(lastUserMessage) || 'Harcama',
+        amount: 0,
+        note: text.slice(0, 500),
+      }
+    }
+    if (/ödenecek|ödeme|borç/i.test(lower)) {
+      return {
+        type: 'addPayable',
+        toName: extractQuoted(text) || extractTaskFromUser(lastUserMessage) || 'Ödeme',
+        amount: 0,
+        note: text.slice(0, 500),
+      }
+    }
+    return {
+      type: 'addReceivable',
+      fromName: extractQuoted(text) || extractTaskFromUser(lastUserMessage) || 'Alacak',
+      amount: 0,
+      note: text.slice(0, 500),
+    }
+  }
+
+  if (
     /brief|görev|listeye|yapılacaklar|bugünkü|ekleyelim|eklememi/i.test(lower)
   ) {
     const taskText =

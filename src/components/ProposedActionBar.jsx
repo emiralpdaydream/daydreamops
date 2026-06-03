@@ -8,8 +8,15 @@ function whatsAppUrl(text) {
 }
 
 export default function ProposedActionBar({ action, onDone }) {
-  const { addBriefTask, appendBriefNote, saveProposal, createEmptyProposal } =
-    useOps()
+  const {
+    addBriefTask,
+    appendBriefNote,
+    saveReceivable,
+    savePayable,
+    saveExpense,
+    saveProposal,
+    createEmptyProposal,
+  } = useOps()
   const { openPreview } = useMailDraft()
   const { showToast } = useToast()
 
@@ -146,6 +153,90 @@ export default function ProposedActionBar({ action, onDone }) {
             }}
           >
             Notu Kaydet
+          </button>
+          <button type="button" className="btn-ghost" onClick={onDone}>
+            Vazgeç
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  if (action.type === 'addReceivable') {
+    return (
+      <div className="operator-action-bar">
+        <p className="operator-action-preview">
+          Kimden: {action.fromName}
+          <br />
+          Tutar: {action.amount} {action.currency}
+          <br />
+          Vade: {action.dueDate || '—'}
+        </p>
+        <div className="operator-action-buttons">
+          <button
+            type="button"
+            className="btn-primary btn-primary-inline"
+            onClick={() => {
+              saveReceivable(action)
+              showToast('Alacak kaydı eklendi.')
+              onDone?.()
+            }}
+          >
+            Ekle
+          </button>
+          <button type="button" className="btn-ghost" onClick={onDone}>
+            Vazgeç
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  if (action.type === 'addPayable') {
+    return (
+      <div className="operator-action-bar">
+        <p className="operator-action-preview">
+          Kime: {action.toName}
+          <br />
+          Tutar: {action.amount} {action.currency}
+        </p>
+        <div className="operator-action-buttons">
+          <button
+            type="button"
+            className="btn-primary btn-primary-inline"
+            onClick={() => {
+              savePayable(action)
+              showToast('Ödeme kaydı eklendi.')
+              onDone?.()
+            }}
+          >
+            Ekle
+          </button>
+          <button type="button" className="btn-ghost" onClick={onDone}>
+            Vazgeç
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  if (action.type === 'addExpense') {
+    return (
+      <div className="operator-action-bar">
+        <p className="operator-action-preview">
+          {action.title} — {action.amount} {action.currency}
+        </p>
+        <div className="operator-action-buttons">
+          <button
+            type="button"
+            className="btn-primary btn-primary-inline"
+            onClick={() => {
+              saveExpense(action)
+              showToast('Harcama kaydı eklendi.')
+              onDone?.()
+            }}
+          >
+            Ekle
           </button>
           <button type="button" className="btn-ghost" onClick={onDone}>
             Vazgeç

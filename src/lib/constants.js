@@ -27,7 +27,9 @@ export const SCREENS = {
   CRM: 'crm',
   BRANDS: 'brands',
   FUTURE: 'future',
-  TAHSILAT: 'tahsilat',
+  MUHASEBE: 'muhasebe',
+  /** @deprecated MUHASEBE kullanın */
+  TAHSILAT: 'muhasebe',
   TEKLIF: 'teklif',
   REPORTS: 'reports',
   SETTINGS: 'settings',

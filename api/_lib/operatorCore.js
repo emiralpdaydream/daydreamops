@@ -9,6 +9,9 @@ const ALLOWED_ACTION_TYPES = new Set([
   'message',
   'addTask',
   'addNote',
+  'addReceivable',
+  'addPayable',
+  'addExpense',
   'proposalDraft',
   'mailDraft',
 ])
@@ -27,9 +30,9 @@ function safeErrorMessage(err, providerId) {
     return 'İstek limiti aşıldı. Biraz sonra tekrar deneyin.'
   }
   if (/key|sk-|bearer|authorization/i.test(msg)) {
-    return 'Operatör yanıt veremedi. Lütfen tekrar deneyin.'
+    return 'AI Asistan yanıt veremedi. Lütfen tekrar deneyin.'
   }
-  return 'Operatör yanıt veremedi. Lütfen tekrar deneyin.'
+  return 'AI Asistan yanıt veremedi. Lütfen tekrar deneyin.'
 }
 
 function sanitizeProposedAction(action) {
@@ -55,6 +58,49 @@ function sanitizeProposedAction(action) {
     const text = String(action.text ?? '').trim().slice(0, 2000)
     if (!text) return undefined
     return { type: 'addNote', text }
+  }
+  if (type === 'addReceivable') {
+    const fromName = String(action.fromName ?? action.from ?? '').trim().slice(0, 200)
+    if (!fromName) return undefined
+    return {
+      type: 'addReceivable',
+      fromName,
+      amount: Number(action.amount) || 0,
+      currency: String(action.currency ?? 'TRY').slice(0, 8),
+      dueDate: String(action.dueDate ?? '').slice(0, 12),
+      targetAccount: String(action.targetAccount ?? 'company_account').slice(0, 40),
+      category: String(action.category ?? 'Genel').slice(0, 120),
+      note: String(action.note ?? '').slice(0, 500),
+    }
+  }
+  if (type === 'addPayable') {
+    const toName = String(action.toName ?? action.to ?? '').trim().slice(0, 200)
+    if (!toName) return undefined
+    return {
+      type: 'addPayable',
+      toName,
+      amount: Number(action.amount) || 0,
+      currency: String(action.currency ?? 'TRY').slice(0, 8),
+      dueDate: String(action.dueDate ?? '').slice(0, 12),
+      sourceAccount: String(action.sourceAccount ?? 'company_account').slice(0, 40),
+      category: String(action.category ?? 'Genel').slice(0, 120),
+      note: String(action.note ?? '').slice(0, 500),
+    }
+  }
+  if (type === 'addExpense') {
+    const title = String(action.title ?? action.name ?? '').trim().slice(0, 200)
+    if (!title) return undefined
+    return {
+      type: 'addExpense',
+      title,
+      amount: Number(action.amount) || 0,
+      currency: String(action.currency ?? 'TRY').slice(0, 8),
+      date: String(action.date ?? '').slice(0, 12),
+      sourceAccount: String(action.sourceAccount ?? 'company_account').slice(0, 40),
+      category: String(action.category ?? 'other').slice(0, 40),
+      note: String(action.note ?? '').slice(0, 500),
+      isCompanyExpense: Boolean(action.isCompanyExpense ?? true),
+    }
   }
   if (type === 'proposalDraft') {
     const body = String(action.body ?? '').trim().slice(0, 8000)

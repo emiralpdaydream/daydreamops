@@ -1,6 +1,7 @@
 @import './styles/tokens-and-modes.css';
 @import './styles/mobile-pwa.css';
 @import './styles/ai-chat.css';
+@import './styles/accounting.css';
 
 @tailwind base;
 @tailwind components;

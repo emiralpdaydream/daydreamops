@@ -132,6 +132,16 @@ export function OperatorProvider({ children, data }) {
     setSpeaking(false)
   }, [])
 
+  const testVoice = useCallback(() => {
+    primeSpeechFromUserGesture()
+    const started = unlockSpeech('Ses testi başarılı. AI Asistan hazır.', {
+      onStart: () => setSpeaking(true),
+      onEnd: () => setSpeaking(false),
+      onBlocked: () => showToast('Ses çalışmadı. Tarayıcı iznini kontrol edin.'),
+    })
+    if (!started) showToast('Ses desteklenmiyor veya engellendi.')
+  }, [showToast])
+
   const prepareVoice = useCallback(() => {
     const started = unlockSpeech('AI Asistan hazır.', {
       onStart: () => {
@@ -173,6 +183,7 @@ export function OperatorProvider({ children, data }) {
       toggleVoiceReply,
       stopVoice,
       prepareVoice,
+      testVoice,
     }),
     [
       open,
@@ -188,6 +199,7 @@ export function OperatorProvider({ children, data }) {
       toggleVoiceReply,
       stopVoice,
       prepareVoice,
+      testVoice,
     ],
   )
 

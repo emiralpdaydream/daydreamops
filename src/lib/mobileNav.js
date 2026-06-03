@@ -14,6 +14,6 @@ export const MOBILE_NAV = [
   },
   { id: SCREENS.TODAY, label: 'Brief', short: 'Brief', glyph: '☰' },
   { id: SCREENS.CRM, label: 'CRM', short: 'CRM', glyph: '○' },
-  { id: SCREENS.TAHSILAT, label: 'Finans', short: 'Finans', glyph: '₺' },
+  { id: SCREENS.MUHASEBE, label: 'Muhasebe', short: 'Muhasebe', glyph: '₺' },
   { id: SCREENS.SETTINGS, label: 'Ayarlar', short: 'Ayarlar', glyph: '⚙' },
 ]

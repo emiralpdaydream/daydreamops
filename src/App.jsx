@@ -19,7 +19,7 @@ import DashboardView from './views/DashboardView'
 import FutureProjectsView from './views/FutureProjectsView'
 import ReportsView from './views/ReportsView'
 import SettingsView from './views/SettingsView'
-import TahsilatView from './views/TahsilatView'
+import AccountingView from './views/AccountingView'
 import TeklifView from './views/TeklifView'
 import TodayView from './views/TodayView'
 
@@ -38,7 +38,7 @@ function AppMain({ onLogout }) {
         {screen === SCREENS.CRM && <CrmView />}
         {screen === SCREENS.BRANDS && <BrandsView />}
         {screen === SCREENS.FUTURE && <FutureProjectsView />}
-        {screen === SCREENS.TAHSILAT && <TahsilatView />}
+        {screen === SCREENS.MUHASEBE && <AccountingView />}
         {screen === SCREENS.REPORTS && <ReportsView />}
         {screen === SCREENS.TEKLIF && <TeklifView />}
         {screen === SCREENS.SETTINGS && (

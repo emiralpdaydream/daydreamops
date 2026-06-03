@@ -1,6 +1,7 @@
 import { createId } from './id'
 import { PAYMENT_STATUS } from './constants'
 import { daysFromToday, todayKey } from './dates'
+import { ensureAccountingData } from './accountingStorage'
 import { ensureBriefData } from './briefStorage'
 import {
   applyLegacyClientName,
@@ -10,7 +11,7 @@ import { STORAGE_KEYS } from './storageKeys'
 
 const DATA_KEY = STORAGE_KEYS.DATA
 const ARCHIVE_DAYS = 30
-const DATA_VERSION = 5
+const DATA_VERSION = 6
 
 /** Seed kayıtları — isDemo bayrağı ile temizlenir */
 const DEMO_CLIENT_IDS = new Set([
@@ -77,6 +78,13 @@ function emptyDataShape() {
     brands: [],
     future_projects: [],
     settings: {},
+    accounting: {
+      receivables: [],
+      payables: [],
+      expenses: [],
+      accounts: [],
+      debts: [],
+    },
     version: DATA_VERSION,
   }
 }
@@ -113,7 +121,7 @@ function normalizeData(parsed) {
   base.daily_note = base.daily_note ?? { date: todayKey(), text: '' }
   base.settings = base.settings ?? {}
   base.version = DATA_VERSION
-  return ensureBriefData(base)
+  return ensureAccountingData(ensureBriefData(base))
 }
 
 function migrateData(parsed) {

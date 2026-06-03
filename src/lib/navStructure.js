@@ -7,7 +7,7 @@ export const NAV_GROUPS = [
       { id: SCREENS.DASHBOARD, label: 'Bugün' },
       { id: SCREENS.TODAY, label: 'Brief' },
       { id: SCREENS.CRM, label: 'CRM' },
-      { id: SCREENS.TAHSILAT, label: 'Finans' },
+      { id: SCREENS.MUHASEBE, label: 'Muhasebe' },
       { id: SCREENS.REPORTS, label: 'Raporlar' },
     ],
   },

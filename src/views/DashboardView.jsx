@@ -3,11 +3,11 @@ import { SCREENS } from '../lib/constants'
 import { formatTry } from '../lib/format'
 import { useOps } from '../lib/useOps'
 import { SCREEN_INTRO } from '../lib/screenManifesto'
-import {
-  getDashboardStats,
-  getOverduePayments,
-} from '../lib/selectors'
+import { RECEIVABLE_STATUS } from '../lib/accountingConstants'
+import { getAccounting } from '../lib/accountingSelectors'
+import { getDashboardStats } from '../lib/selectors'
 import DataCell from '../components/DataCell'
+import DashboardAccountingCard from '../components/DashboardAccountingCard'
 import FocusCard from '../components/FocusCard'
 import PageHeader from '../components/PageHeader'
 import ReminderModal from '../components/ReminderModal'
@@ -17,9 +17,12 @@ import OperatorDashboardCard from '../components/OperatorDashboardCard'
 const intro = SCREEN_INTRO.dashboard
 
 export default function DashboardView({ onNavigate }) {
-  const { data, markReminderSent } = useOps()
+  const { data, sendReceivableReminder } = useOps()
   const stats = getDashboardStats(data)
-  const overdue = getOverduePayments(data)
+  const accounting = getAccounting(data)
+  const overdueReceivables = accounting.receivables
+    .filter((r) => r.status === RECEIVABLE_STATUS.OVERDUE)
+    .slice(0, 3)
   const [reminder, setReminder] = useState(null)
 
   const dateLabel = new Date().toLocaleDateString('tr-TR', {
@@ -39,6 +42,7 @@ export default function DashboardView({ onNavigate }) {
 
       <div className="dashboard-stagger section-gap">
       <OperatorDashboardCard />
+      <DashboardAccountingCard onNavigate={onNavigate} />
       <div className="dashboard-grid">
         <FocusCard
           title="Bugünkü görevler"
@@ -93,24 +97,24 @@ export default function DashboardView({ onNavigate }) {
         </FocusCard>
 
         <div className="dashboard-aside space-y-8">
-          {overdue.length > 0 && (
+          {overdueReceivables.length > 0 && (
             <FocusCard
-              title="Tahsilat"
+              title="Geciken alacaklar"
               meta="Acil dikkat"
               className="dashboard-summary-card"
             >
               <ul>
-                {overdue.slice(0, 3).map((item) => (
+                {overdueReceivables.map((item) => (
                   <li
                     key={item.id}
                     className="flex flex-col gap-2 border-b border-border py-4 last:border-0 sm:flex-row sm:items-center sm:justify-between"
                   >
                     <div>
                       <p className="text-sm font-medium text-text">
-                        {item.client}
+                        {item.fromName}
                       </p>
                       <p className="mt-1 text-xs signal-wine">
-                        {item.daysLate} gün gecikmiş
+                        Vade: {item.dueDate}
                       </p>
                     </div>
                     <div className="flex w-full min-w-0 flex-wrap items-center justify-between gap-2 sm:w-auto sm:justify-end sm:gap-4">
@@ -119,7 +123,14 @@ export default function DashboardView({ onNavigate }) {
                       </p>
                       <button
                         type="button"
-                        onClick={() => setReminder(item)}
+                        onClick={() =>
+                          setReminder({
+                            clientName: item.fromName,
+                            amount: item.amount,
+                            label: item.category,
+                            id: item.id,
+                          })
+                        }
                         className="btn-ghost shrink-0"
                       >
                         Hatırlat
@@ -130,10 +141,10 @@ export default function DashboardView({ onNavigate }) {
               </ul>
               <button
                 type="button"
-                onClick={() => onNavigate(SCREENS.TAHSILAT)}
+                onClick={() => onNavigate(SCREENS.MUHASEBE)}
                 className="btn-ghost mt-4"
               >
-                Tüm tahsilat →
+                Muhasebeye git →
               </button>
             </FocusCard>
           )}
@@ -191,10 +202,13 @@ export default function DashboardView({ onNavigate }) {
 
       {reminder && (
         <ReminderModal
-          payment={reminder.payment}
-          clientName={reminder.client}
+          payment={{ amount: reminder.amount, label: reminder.label }}
+          clientName={reminder.clientName}
           onClose={() => setReminder(null)}
-          onSent={() => markReminderSent(reminder.payment.id)}
+          onSent={() => {
+            sendReceivableReminder(reminder.id)
+            setReminder(null)
+          }}
         />
       )}
     </main>

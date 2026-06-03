@@ -36,7 +36,7 @@ export default function ReportsView() {
 
   if (!report.hasData) {
     return (
-      <main className="page-main page-main--reports">
+      <main className="page-main page-main--reports reports-layout-wide">
         <div className="reports-hero-strip">
           <BrandBackdrop variant="reports" />
         </div>
@@ -61,7 +61,7 @@ export default function ReportsView() {
     : 0
 
   return (
-    <main className="page-main page-main--reports">
+    <main className="page-main page-main--reports reports-layout-wide">
       <div className="reports-hero-strip">
         <BrandBackdrop variant="reports" />
       </div>

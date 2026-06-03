@@ -207,7 +207,7 @@ function seedData() {
       paid_date: null,
       status: PAYMENT_STATUS.PENDING,
       reminder_sent: false,
-      label: 'Bekleyen Ödeme',
+      label: 'Bekleyen Tahsilat',
       isDemo: true,
     },
     {

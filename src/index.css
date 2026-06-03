@@ -1,3 +1,5 @@
+@import './styles/tokens-and-modes.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -128,7 +130,7 @@
   }
 
   .workspace-bar {
-    display: none;
+    display: none; /* web modunda tokens-and-modes.css açar */
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
@@ -136,12 +138,6 @@
     background: #fbfaf7;
     padding: 1rem 2.5rem;
     max-width: 100%;
-  }
-
-  @media (min-width: 768px) {
-    .workspace-bar {
-      display: flex;
-    }
   }
 
   .workspace-chapter {
@@ -163,7 +159,7 @@
   }
 
   .nav-topbar {
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: space-between;
     gap: 0.75rem;
@@ -174,14 +170,9 @@
     padding-top: max(0.75rem, env(safe-area-inset-top, 0px));
   }
 
-  @media (min-width: 768px) {
-    .nav-topbar {
-      display: none;
-    }
-  }
-
-  /* Mobil alt nav — 6 eşit kolon, scroll yok */
+  /* Mobil alt nav — görünüm modu ile kontrol (tokens-and-modes.css) */
   .mobile-nav {
+    display: none;
     position: fixed;
     bottom: 0;
     left: 0;
@@ -271,12 +262,6 @@
     border-right: 1px solid #ddd6cb;
     background: #fbfaf7;
     overflow-x: hidden;
-  }
-
-  @media (min-width: 768px) {
-    .sidebar-premium {
-      display: flex;
-    }
   }
 
   .sidebar-brand {

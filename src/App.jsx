@@ -8,6 +8,8 @@ import { OperatorProvider } from './lib/operatorContext'
 import { OpsProvider } from './lib/opsStore'
 import { useOps } from './lib/useOps'
 import { ToastProvider } from './lib/toast'
+import { ThemeProvider } from './lib/ThemeProvider'
+import { ViewModeProvider } from './lib/ViewModeProvider'
 import DaydreamOperatorPanel from './components/DaydreamOperatorPanel'
 import OperatorFab from './components/OperatorFab'
 import BrandsView from './views/BrandsView'
@@ -77,11 +79,15 @@ function App() {
   }
 
   return (
-    <ToastProvider>
-      <OpsProvider>
-        <AppMain onLogout={handleLogout} />
-      </OpsProvider>
-    </ToastProvider>
+    <ViewModeProvider>
+      <ThemeProvider>
+        <ToastProvider>
+          <OpsProvider>
+            <AppMain onLogout={handleLogout} />
+          </OpsProvider>
+        </ToastProvider>
+      </ThemeProvider>
+    </ViewModeProvider>
   )
 }
 

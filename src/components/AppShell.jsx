@@ -42,7 +42,7 @@ export default function AppShell({
   }
 
   return (
-    <CinematicLayout className="app-root flex min-h-0 min-h-dvh w-full max-w-full flex-col overflow-x-clip md:flex-row">
+    <CinematicLayout className="app-root flex min-h-0 min-h-dvh w-full max-w-full overflow-x-clip">
       <AppSidebar screen={screen} onNavigate={onNavigate} onOpenOperator={() => setOpen(true)} />
 
       <div className="workspace flex min-h-0 min-w-0 w-full max-w-full flex-1 flex-col overflow-x-clip">
@@ -82,10 +82,10 @@ export default function AppShell({
         </header>
 
         <div className="workspace-main min-h-0 min-w-0 w-full max-w-full flex-1 overflow-x-clip">
-          {children}
+          <div className="page-layout-inner w-full min-w-0">{children}</div>
         </div>
 
-        <nav className="mobile-nav md:hidden" aria-label="Ana menü">
+        <nav className="mobile-nav" aria-label="Ana menü">
           {MOBILE_NAV.map((item) => (
             <button
               key={item.id}

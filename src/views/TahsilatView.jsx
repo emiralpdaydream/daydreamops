@@ -88,7 +88,7 @@ export default function TahsilatView() {
   }
 
   return (
-    <main className="page-main">
+    <main className="page-main finance-layout-wide">
       <PageHeader {...SCREEN_INTRO.tahsilat} />
 
       <section className="section-gap grid max-w-wide grid-cols-1 gap-10 border-t border-border pt-10 sm:grid-cols-3 sm:gap-12">

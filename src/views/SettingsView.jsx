@@ -5,6 +5,7 @@ import {
   setPassword,
   verifyPassword,
 } from '../lib/auth'
+import AppearanceSettings from '../components/AppearanceSettings'
 import ConnectionsPanel from '../components/ConnectionsPanel'
 import DataManagementSection from '../components/DataManagementSection'
 import PageHeader from '../components/PageHeader'
@@ -83,6 +84,8 @@ export default function SettingsView() {
           </button>
         </form>
       </section>
+
+      <AppearanceSettings />
 
       <DataManagementSection />
 

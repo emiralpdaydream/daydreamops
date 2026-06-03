@@ -184,11 +184,13 @@ export default function DaydreamOperatorPanel() {
               ◉
             </button>
             <input
-              className="input-premium operator-input"
+              type="text"
+              className="operator-input"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Operatöre yazın…"
               disabled={loading}
+              autoComplete="off"
             />
             <button
               type="submit"

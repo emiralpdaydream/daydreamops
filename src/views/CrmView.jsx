@@ -122,7 +122,7 @@ export default function CrmView() {
         </button>
       </div>
 
-      <ul className="mt-6 space-y-3 md:hidden">
+      <ul className="crm-mobile-list mt-6 space-y-3">
         {clients.length === 0 ? (
           <li>
             <EmptyStateBlock message="Henüz müşteri yok" variant="cinematic" />
@@ -149,7 +149,7 @@ export default function CrmView() {
         )}
       </ul>
 
-      <div className="surface-card section-gap hidden md:block">
+      <div className="crm-web-table surface-card section-gap">
         <div className="overflow-x-auto p-4 md:p-6">
           <table className="table-premium w-full min-w-0">
             <thead>

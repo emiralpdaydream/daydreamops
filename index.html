@@ -24,11 +24,40 @@
       body {
         margin: 0;
         min-height: 100%;
-        overflow-x: hidden;
-        background: #f3f0ea;
+        overflow-x: clip;
+        background: #ebe8e2;
         color: #171615;
       }
     </style>
+    <script>
+      (function () {
+        try {
+          var p = localStorage.getItem('daydream_ops_view_mode') || 'auto'
+          var e =
+            p === 'mobile'
+              ? 'mobile'
+              : p === 'web'
+                ? 'web'
+                : window.matchMedia('(min-width: 768px)').matches
+                  ? 'web'
+                  : 'mobile'
+          document.documentElement.dataset.viewPreference = p
+          document.documentElement.dataset.effectiveView = e
+
+          var t = localStorage.getItem('daydream_ops_theme_mode') || 'auto'
+          var dark = window.matchMedia('(prefers-color-scheme: dark)').matches
+          var th =
+            t === 'night' ? 'night' : t === 'day' ? 'day' : dark ? 'night' : 'day'
+          document.documentElement.dataset.themePreference = t
+          document.documentElement.dataset.theme = th
+          var meta = document.querySelector('meta[name="theme-color"]')
+          if (meta) meta.setAttribute('content', th === 'night' ? '#141312' : '#ebe8e2')
+        } catch (err) {
+          document.documentElement.dataset.effectiveView = 'mobile'
+          document.documentElement.dataset.theme = 'day'
+        }
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

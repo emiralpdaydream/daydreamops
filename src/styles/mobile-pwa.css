@@ -46,8 +46,8 @@ html[data-effective-view='mobile'] .mobile-nav {
 }
 
 html[data-effective-view='mobile'] .mobile-nav-item {
-  min-height: 2.75rem;
-  padding: 0.15rem 0.05rem;
+  min-height: 44px;
+  padding: 0.2rem 0.06rem;
 }
 
 html[data-effective-view='mobile'] .mobile-nav-glyph {
@@ -56,13 +56,14 @@ html[data-effective-view='mobile'] .mobile-nav-glyph {
 }
 
 html[data-effective-view='mobile'] .mobile-nav-label {
-  font-size: 11px;
+  font-size: clamp(9px, 2.55vw, 11px);
   line-height: 1.2;
   letter-spacing: 0;
   color: var(--color-text-secondary-on-dark);
   white-space: nowrap;
-  overflow: visible;
-  text-overflow: clip;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 html[data-effective-view='mobile'] .mobile-nav-item.is-active .mobile-nav-label {

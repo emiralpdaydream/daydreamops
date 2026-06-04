@@ -353,15 +353,16 @@
   border: 0;
   background: transparent;
   font-family: Inter, sans-serif;
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.45;
-  color: #e8e4dc;
+  color: var(--color-operator-text);
   padding: 0.35rem 0;
   outline: none;
 }
 
 .ai-chat-compose__input::placeholder {
-  color: #726d66;
+  color: var(--color-text-secondary-on-dark);
+  opacity: 1;
 }
 
 .ai-chat-bubble .operator-action-bar {

@@ -138,8 +138,8 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  background: #ebe8e2;
-  color: #6f6961;
+  background: var(--color-border-subtle);
+  color: var(--color-text-secondary);
 }
 
 .accounting-pill--urgent {
@@ -302,7 +302,7 @@
 }
 
 .accounting-input::placeholder {
-  color: var(--color-text-muted, #8f887e);
+  color: var(--color-placeholder);
   opacity: 1;
 }
 
@@ -342,15 +342,17 @@
 .dashboard-accounting-card__label {
   display: block;
   font-size: 12px;
-  color: var(--color-text-secondary, #6f6961);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--color-text-secondary);
 }
 
 .dashboard-accounting-card__value {
   display: block;
   margin-top: 0.2rem;
-  font-size: 15px;
+  font-size: 1rem;
   font-weight: 600;
-  color: var(--color-text, #171615);
+  color: var(--color-text);
 }
 
 .dashboard-accounting-card__cell--net .dashboard-accounting-card__value {
@@ -391,4 +393,21 @@ html[data-theme='night'] .accounting-input {
 
 html[data-theme='night'] .accounting-modal-panel {
   background: #141312;
+}
+
+.invoice-vat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.invoice-vat-grid__readonly {
+  background: var(--color-surface-muted, #f5f2ec);
+  color: var(--color-text, #1a1816);
+  cursor: default;
+}
+
+html[data-theme='night'] .invoice-vat-grid__readonly {
+  background: #1c1a18;
+  color: #f7f3ea;
 }

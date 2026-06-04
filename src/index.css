@@ -2,6 +2,10 @@
 @import './styles/mobile-pwa.css';
 @import './styles/ai-chat.css';
 @import './styles/accounting.css';
+@import './styles/vault-whatsapp.css';
+@import './styles/dashboard-ceo.css';
+@import './styles/record-actions.css';
+@import './styles/mobile-a11y.css';
 
 @tailwind base;
 @tailwind components;
@@ -74,7 +78,8 @@
 
   input::placeholder,
   textarea::placeholder {
-    color: #a09a90;
+    color: var(--color-placeholder);
+    opacity: 1;
   }
 
   textarea.input-premium {
@@ -92,7 +97,7 @@
     min-height: 100dvh;
     max-width: 100%;
     overflow-x: hidden;
-    background-color: #f3f0ea;
+    background-color: var(--color-bg-warm);
   }
 
   .cinematic-scene::before {
@@ -113,7 +118,7 @@
   }
 
   .workspace {
-    background: #f3f0ea;
+    background: var(--color-bg-warm);
     max-width: 100%;
     overflow-x: hidden;
   }
@@ -202,7 +207,7 @@
     justify-content: center;
     gap: 0.15rem;
     min-width: 0;
-    min-height: 3.1rem;
+    min-height: 44px;
     border: none;
     background: transparent;
     padding: 0.2rem 0.1rem;
@@ -215,16 +220,16 @@
   .mobile-nav-glyph {
     font-size: 11px;
     line-height: 1;
-    color: #b5afa4;
+    color: var(--color-text-muted-on-dark);
   }
 
   .mobile-nav-label {
-    font-size: 9px;
+    font-size: 10px;
     font-weight: 500;
     line-height: 1.15;
-    letter-spacing: 0.02em;
+    letter-spacing: 0;
     text-align: center;
-    color: #a09a90;
+    color: var(--color-text-secondary-on-dark);
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -238,12 +243,12 @@
   }
 
   .mobile-nav-item.is-active .mobile-nav-label {
-    color: #171615;
+    color: var(--color-text-on-dark);
     font-weight: 600;
   }
 
   .mobile-nav-item.is-active .mobile-nav-glyph {
-    color: #7a1028;
+    color: var(--color-accent-soft);
   }
 
   .mobile-nav-item.is-active::before {
@@ -785,7 +790,7 @@
     font-weight: 600;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: #a09a90;
+    color: var(--color-text-secondary);
   }
 
   .report-metric-value {
@@ -794,6 +799,7 @@
     font-size: 1.35rem;
     font-weight: 600;
     font-variant-numeric: tabular-nums;
+    color: var(--color-text);
     overflow-wrap: anywhere;
   }
 
@@ -941,13 +947,14 @@
 
   .modal-panel {
     width: 100%;
-    max-width: 22rem;
-    max-height: min(90vh, 640px);
+    max-width: min(22rem, calc(100vw - 2rem));
+    max-height: min(90dvh, 640px);
     overflow-y: auto;
     padding: 1.5rem;
-    border: 1px solid #ddd6cb;
+    border: 1px solid var(--color-border);
     border-radius: 6px;
-    background: #fbfaf7;
+    background: var(--color-surface-elevated);
+    color: var(--color-text);
   }
 
   .modal-actions {
@@ -962,18 +969,20 @@
   }
 
   .btn-danger {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     max-width: 100%;
-    height: 2.5rem;
+    min-height: 44px;
     padding: 0 1rem;
-    border: 1px solid #7a1028;
+    border: 1px solid var(--color-burgundy);
     border-radius: 4px;
-    background: #7a1028;
+    background: var(--color-burgundy);
     font-family: Inter, sans-serif;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 600;
-    line-height: 2.5rem;
-    color: #fbfaf7;
+    line-height: 1.2;
+    color: var(--color-text-on-dark);
     cursor: pointer;
   }
 
@@ -1930,34 +1939,41 @@
 }
 
 .integration-badge {
+  flex-shrink: 0;
   font-family: Inter, sans-serif;
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  padding: 0.2rem 0.45rem;
-  border-radius: 3px;
-  border: 1px solid #e5dfd4;
-  color: #8a857c;
-  background: #fbfaf7;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid var(--color-status-off-border);
+  color: var(--color-status-off-fg);
+  background: var(--color-status-off-bg);
 }
 
 .integration-badge--on {
-  border-color: #c5d4c0;
-  color: #4a5f45;
-  background: #f0f4ee;
+  border-color: var(--color-status-connected-border);
+  color: var(--color-status-connected-fg);
+  background: var(--color-status-connected-bg);
 }
 
 .integration-badge--prep {
-  border-color: #e8dfd0;
-  color: #8a6d4a;
-  background: #faf6f0;
+  border-color: var(--color-status-preparing-border);
+  color: var(--color-status-preparing-fg);
+  background: var(--color-status-preparing-bg);
+}
+
+.integration-badge--off {
+  border-color: var(--color-status-off-border);
+  color: var(--color-status-off-fg);
+  background: var(--color-status-off-bg);
 }
 
 .integration-badge--error {
-  border-color: #e8d0d4;
-  color: #8a3a4a;
-  background: #faf4f5;
+  border-color: var(--color-status-preparing-border);
+  color: var(--color-status-preparing-fg);
+  background: var(--color-status-preparing-bg);
 }
 
 .integration-card__actions {
@@ -2074,15 +2090,68 @@
 }
 
 .integration-glyph {
+  flex-shrink: 0;
   font-family: Inter, sans-serif;
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.06em;
-  padding: 0.2rem 0.35rem;
-  border: 1px solid #e5dfd4;
+  padding: 0.25rem 0.4rem;
+  border: 1px solid var(--color-border);
   border-radius: 3px;
-  color: #8a857c;
-  background: #fbfaf7;
+  color: var(--color-text-secondary);
+  background: var(--color-surface);
+}
+
+.connections-status-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  max-width: 100%;
+}
+
+.connections-status-row {
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 6px;
+  background: var(--color-surface-elevated);
+  max-width: 100%;
+}
+
+.connections-status-row__main {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  min-width: 0;
+}
+
+.connections-status-row__title {
+  font-family: Inter, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.connections-status-row__purpose {
+  margin-top: 0.2rem;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--color-text-secondary);
+}
+
+.connections-status-row__hint {
+  margin-top: 0.35rem;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--color-text-muted);
+}
+
+.connections-status-row__test {
+  margin-top: 0.65rem;
+  width: 100%;
+  min-height: 44px;
 }
 
 .connections-hub__intro,
@@ -2095,6 +2164,10 @@
 
 .connections-hub__status-line--ok {
   color: #4a5f45;
+}
+
+.connections-hub__status-line--warn {
+  color: #8a5a2a;
 }
 
 .connections-hub__gemini-note {

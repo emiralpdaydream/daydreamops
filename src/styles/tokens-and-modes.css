@@ -28,7 +28,7 @@ body,
 .connection-action,
 .data-cell-hint,
 .member-copy {
-  color: var(--color-text-muted) !important;
+  color: var(--color-text-secondary) !important;
 }
 
 .text-secondary {
@@ -79,11 +79,12 @@ body,
 .input-premium {
   border-bottom: 1px solid var(--color-border);
   color: var(--color-text);
-  font-size: max(15px, 1rem);
+  font-size: 16px;
 }
 
 .input-premium::placeholder {
-  color: var(--color-text-soft);
+  color: var(--color-placeholder);
+  opacity: 1;
 }
 
 .input-premium:focus {
@@ -103,7 +104,7 @@ body,
 }
 
 .btn-primary:disabled {
-  opacity: 0.55;
+  opacity: 0.65;
   color: var(--color-btn-primary-disabled-fg);
 }
 
@@ -314,7 +315,8 @@ html[data-theme='night'] .input-premium {
 }
 
 html[data-theme='night'] .input-premium::placeholder {
-  color: var(--color-text-soft);
+  color: var(--color-placeholder);
+  opacity: 1;
 }
 
 html[data-theme='night'] .view-mode-option {
@@ -389,6 +391,67 @@ html[data-theme='night'] .toast-premium {
   color: var(--color-text-muted) !important;
 }
 
+/* Muhasebe özeti (Dashboard) — krem kart üzerinde okunur etiket/değer */
+.dashboard-accounting-card__label {
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.dashboard-accounting-card__value {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+html[data-theme='night'] .dashboard-accounting-card__label {
+  color: var(--color-text-secondary);
+}
+
+html[data-theme='night'] .dashboard-accounting-card__value {
+  color: var(--color-text);
+}
+
+/* Rapor metrikleri */
+.report-metric {
+  background: var(--color-surface-elevated);
+  border-color: var(--color-border);
+}
+
+.report-metric-label {
+  color: var(--color-text-secondary) !important;
+}
+
+.report-metric-value {
+  color: var(--color-text) !important;
+}
+
+html[data-theme='night'] .report-metric {
+  background: var(--color-surface-elevated);
+  border-color: var(--color-border-subtle);
+}
+
+/* Modallar — tema token */
+.modal-panel {
+  background: var(--color-surface-elevated);
+  border-color: var(--color-border);
+  color: var(--color-text);
+  max-width: min(22rem, calc(100vw - 2rem - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px)));
+}
+
+.modal-overlay h2,
+.modal-overlay .font-sans {
+  color: var(--color-text);
+}
+
+.modal-overlay .text-dim {
+  color: var(--color-text-secondary) !important;
+}
+
+html[data-theme='night'] .modal-panel {
+  background: var(--color-surface-elevated);
+  color: var(--color-text);
+}
+
 .integration-card {
   background: var(--color-surface-elevated);
   border-color: var(--color-border-subtle);
@@ -435,6 +498,11 @@ html[data-theme='night'] .btn-outline:disabled {
 .connections-hub__intro,
 .connections-hub__status-line {
   color: var(--color-text-secondary);
+}
+
+.connections-status-row {
+  background: var(--color-surface-elevated);
+  border-color: var(--color-border-subtle);
 }
 
 .connections-hub__gemini-note {

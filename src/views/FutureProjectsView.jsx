@@ -1,12 +1,15 @@
 import { useState } from 'react'
+import ConfirmModal from '../components/ConfirmModal'
 import { useOps } from '../lib/useOps'
 import { SCREEN_INTRO } from '../lib/screenManifesto'
+import { DELETE_CONFIRM_MESSAGE } from '../lib/confirmMessages'
 import PageHeader from '../components/PageHeader'
 
 export default function FutureProjectsView() {
   const { data, upsertFutureProject, deleteFutureProject, createEmptyFutureProject } =
     useOps()
   const [editing, setEditing] = useState(null)
+  const [confirmDelete, setConfirmDelete] = useState(null)
 
   function save(e) {
     e.preventDefault()
@@ -104,7 +107,7 @@ export default function FutureProjectsView() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => deleteFutureProject(p.id)}
+                    onClick={() => setConfirmDelete({ id: p.id, title: p.title })}
                     className="btn-ghost"
                   >
                     Sil
@@ -115,6 +118,19 @@ export default function FutureProjectsView() {
           ))
         )}
       </ul>
+
+      <ConfirmModal
+        open={Boolean(confirmDelete)}
+        title="Projeyi sil"
+        message={DELETE_CONFIRM_MESSAGE}
+        confirmLabel="Sil"
+        danger
+        onConfirm={() => {
+          deleteFutureProject(confirmDelete.id)
+          setConfirmDelete(null)
+        }}
+        onCancel={() => setConfirmDelete(null)}
+      />
     </main>
   )
 }

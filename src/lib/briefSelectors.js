@@ -1,9 +1,18 @@
 import { todayKey } from './dates'
+import { peekTodayNotes, peekTodayTasks } from './taskStorage'
 
+/** Bugünün brief kaydı — görevler tek kaynak (data.tasks, brief ile senkron) */
 export function getTodayBriefRecord(data) {
   const key = todayKey()
-  if (data?.brief?.date === key) return data.brief
-  return { date: key, tasks: [], notes: '' }
+  return {
+    date: key,
+    tasks: peekTodayTasks(data),
+    notes: peekTodayNotes(data),
+  }
+}
+
+export function getTodayTasks(data) {
+  return peekTodayTasks(data)
 }
 
 export function sortBriefTasks(tasks) {

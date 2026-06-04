@@ -102,8 +102,28 @@ if (!useProd) {
   )
 }
 
-fs.writeFileSync(envPath, serializeEnv(map, comments), 'utf8')
-console.log(`Tamam: ${envPath}`)
-console.log(`  GOOGLE_CLIENT_ID=${web.client_id.slice(0, 12)}…`)
-console.log(`  GOOGLE_REDIRECT_URI=${redirectUri}`)
-console.log('  npm run dev → Ayarlar → Bağlantılar → Gmail Bağla')
+if (useProd) {
+  const snippetPath = path.join(root, 'vercel-google-env.txt')
+  const snippet = [
+    '# Vercel → Settings → Environment Variables → Production',
+    '# Bu dosyayı kopyalayıp Vercel\'e yapıştırın. .env.local DEĞİŞMEZ.',
+    '',
+    `GOOGLE_CLIENT_ID=${web.client_id}`,
+    `GOOGLE_CLIENT_SECRET=${web.client_secret}`,
+    `GOOGLE_REDIRECT_URI=${redirectUri}`,
+    `GOOGLE_TOKEN_SECRET=${map.get('GOOGLE_TOKEN_SECRET')}`,
+    `APP_URL=${appUrl}`,
+    '',
+    '# Sonra: Deployments → Redeploy',
+    `# Test: ${appUrl}/api/google-env-test`,
+  ].join('\n')
+  fs.writeFileSync(snippetPath, snippet, 'utf8')
+  console.log(`Vercel şablonu: ${snippetPath}`)
+  console.log(`  GOOGLE_REDIRECT_URI=${redirectUri}`)
+  console.log('  .env.local yerel ayarlar korundu — yerel için: npm run google:sync')
+} else {
+  fs.writeFileSync(envPath, serializeEnv(map, comments), 'utf8')
+  console.log(`Yerel: ${envPath}`)
+  console.log(`  GOOGLE_REDIRECT_URI=${redirectUri}`)
+  console.log('  npm run dev → Ayarlar → Bağlantılar → Gmail Bağla')
+}

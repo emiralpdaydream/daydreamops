@@ -8,10 +8,11 @@ import {
 import AppearanceSettings from '../components/AppearanceSettings'
 import ConnectionsHub from '../components/ConnectionsHub'
 import DataManagementSection from '../components/DataManagementSection'
+import VaultSection from '../components/vault/VaultSection'
 import PageHeader from '../components/PageHeader'
 import { SCREEN_INTRO } from '../lib/screenManifesto'
 
-export default function SettingsView({ onNavigate }) {
+export default function SettingsView() {
   const [current, setCurrent] = useState('')
   const [next, setNext] = useState('')
   const [confirm, setConfirm] = useState('')
@@ -87,9 +88,11 @@ export default function SettingsView({ onNavigate }) {
 
       <AppearanceSettings />
 
+      <VaultSection />
+
       <DataManagementSection />
 
-      <ConnectionsHub onNavigate={onNavigate} />
+      <ConnectionsHub />
 
       <section className="settings-section max-w-content">
         <h2 className="settings-section__title">Uygulama bilgisi</h2>

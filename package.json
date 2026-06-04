@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "google:sync": "node scripts/sync-google-oauth.mjs",
-    "google:sync:prod": "node scripts/sync-google-oauth.mjs --prod"
+    "google:sync:prod": "node scripts/sync-google-oauth.mjs --prod",
+    "env:check": "node scripts/check-env.mjs"
   },
   "dependencies": {
     "react": "^19.2.6",

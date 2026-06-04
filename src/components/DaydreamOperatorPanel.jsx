@@ -38,7 +38,13 @@ export default function DaydreamOperatorPanel() {
     testVoice,
   } = useOperator()
 
-  const { data, setBriefNotes, appendBriefNote } = useOps()
+  const {
+    data,
+    setBriefNotes,
+    appendBriefNote,
+    deleteCollectedNote,
+    updateCollectedNote,
+  } = useOps()
   const brief = getTodayBriefRecord(data)
   const scrollRef = useRef(null)
   const recRef = useRef(null)
@@ -178,6 +184,8 @@ export default function DaydreamOperatorPanel() {
             notes={brief.notes ?? ''}
             onSaveNotes={setBriefNotes}
             onAppendNote={appendBriefNote}
+            onDeleteNote={deleteCollectedNote}
+            onUpdateNote={updateCollectedNote}
           />
         ) : (
           <>

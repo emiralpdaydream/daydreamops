@@ -4,6 +4,7 @@ export const ACCOUNTING_TABS = {
   RECEIVABLES: 'receivables',
   PAYABLES: 'payables',
   EXPENSES: 'expenses',
+  INVOICES: 'invoices',
   ACCOUNTS: 'accounts',
 }
 

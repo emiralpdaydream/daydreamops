@@ -21,6 +21,7 @@ export async function testGoogleEnv() {
       ok: Boolean(body.ok),
       oauthReady: Boolean(body.oauthReady),
       geminiKeyReady: Boolean(body.geminiKeyReady),
+      missing: Array.isArray(body.missing) ? body.missing : [],
       message: body.message || 'Google OAuth durumu alınamadı.',
     }
   } catch {

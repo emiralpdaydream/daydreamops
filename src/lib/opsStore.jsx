@@ -17,6 +17,7 @@ import {
   deleteClient as deleteClientData,
   deleteClientPayments,
   deletePayment as deletePaymentData,
+  deleteProposal as deleteProposalData,
   exportAllData,
   loadData,
   purgeArchivedClients,
@@ -46,9 +47,24 @@ import {
   addBriefTask as addBriefTaskData,
   appendBriefNote as appendBriefNoteData,
   deleteBriefTask as deleteBriefTaskData,
+  deleteCollectedNote as deleteCollectedNoteData,
   setBriefNotes as setBriefNotesData,
   toggleBriefTask as toggleBriefTaskData,
+  updateBriefTask as updateBriefTaskData,
+  updateCollectedNote as updateCollectedNoteData,
 } from './briefStorage'
+import {
+  deleteIntegrationNote,
+  deleteInvoice,
+  deleteVaultAccount,
+  deleteWhatsAppDraft,
+  markInvoicePaid,
+  prepareInvoiceParasut,
+  upsertIntegrationNote,
+  upsertInvoice,
+  upsertVaultAccount,
+  upsertWhatsAppDraft,
+} from './appDataStorage'
 
 function prepare(data) {
   return syncPaymentStatuses(purgeArchivedClients({ ...data }))
@@ -83,6 +99,11 @@ export function OpsProvider({ children }) {
     [data, persist],
   )
 
+  const updateBriefTask = useCallback(
+    (taskId, text) => persist(updateBriefTaskData(data, taskId, text)),
+    [data, persist],
+  )
+
   const setBriefNotes = useCallback(
     (notes) => persist(setBriefNotesData(data, notes)),
     [data, persist],
@@ -90,6 +111,16 @@ export function OpsProvider({ children }) {
 
   const appendBriefNote = useCallback(
     (text) => persist(appendBriefNoteData(data, text)),
+    [data, persist],
+  )
+
+  const deleteCollectedNote = useCallback(
+    (noteId) => persist(deleteCollectedNoteData(data, noteId)),
+    [data, persist],
+  )
+
+  const updateCollectedNote = useCallback(
+    (noteId, text) => persist(updateCollectedNoteData(data, noteId, text)),
     [data, persist],
   )
 
@@ -291,9 +322,57 @@ export function OpsProvider({ children }) {
         isDemo: form.isDemo ?? false,
         created_at: form.created_at || new Date().toISOString(),
       }
-      next.proposals.unshift(entry)
+      const idx = next.proposals.findIndex((p) => p.id === entry.id)
+      if (idx >= 0) next.proposals[idx] = entry
+      else next.proposals.unshift(entry)
       return persist(next)
     },
+    [data, persist],
+  )
+
+  const removeProposal = useCallback(
+    (id) => persist(deleteProposalData(data, id)),
+    [data, persist],
+  )
+
+  const saveVaultAccount = useCallback(
+    (input, id) => persist(upsertVaultAccount(data, input, id)),
+    [data, persist],
+  )
+  const removeVaultAccount = useCallback(
+    (id) => persist(deleteVaultAccount(data, id)),
+    [data, persist],
+  )
+  const saveInvoice = useCallback(
+    (input, id) => persist(upsertInvoice(data, input, id)),
+    [data, persist],
+  )
+  const removeInvoice = useCallback(
+    (id) => persist(deleteInvoice(data, id)),
+    [data, persist],
+  )
+  const markInvoicePaidRecord = useCallback(
+    (id) => persist(markInvoicePaid(data, id)),
+    [data, persist],
+  )
+  const prepareInvoiceParasutRecord = useCallback(
+    (id) => persist(prepareInvoiceParasut(data, id)),
+    [data, persist],
+  )
+  const saveWhatsAppDraft = useCallback(
+    (input, id) => persist(upsertWhatsAppDraft(data, input, id)),
+    [data, persist],
+  )
+  const removeWhatsAppDraft = useCallback(
+    (id) => persist(deleteWhatsAppDraft(data, id)),
+    [data, persist],
+  )
+  const saveIntegrationNote = useCallback(
+    (input, id) => persist(upsertIntegrationNote(data, input, id)),
+    [data, persist],
+  )
+  const removeIntegrationNote = useCallback(
+    (id) => persist(deleteIntegrationNote(data, id)),
     [data, persist],
   )
 
@@ -328,8 +407,11 @@ export function OpsProvider({ children }) {
       addBriefTask,
       toggleBriefTask,
       deleteBriefTask,
+      updateBriefTask,
       setBriefNotes,
       appendBriefNote,
+      deleteCollectedNote,
+      updateCollectedNote,
       saveReceivable,
       removeReceivable,
       savePayable,
@@ -356,6 +438,17 @@ export function OpsProvider({ children }) {
       markPaymentPaid,
       markReminderSent,
       saveProposal,
+      removeProposal,
+      saveVaultAccount,
+      removeVaultAccount,
+      saveInvoice,
+      removeInvoice,
+      markInvoicePaidRecord,
+      prepareInvoiceParasutRecord,
+      saveWhatsAppDraft,
+      removeWhatsAppDraft,
+      saveIntegrationNote,
+      removeIntegrationNote,
       exportJson,
       resetAll,
       resetDemo,
@@ -374,8 +467,11 @@ export function OpsProvider({ children }) {
       addBriefTask,
       toggleBriefTask,
       deleteBriefTask,
+      updateBriefTask,
       setBriefNotes,
       appendBriefNote,
+      deleteCollectedNote,
+      updateCollectedNote,
       saveReceivable,
       removeReceivable,
       savePayable,
@@ -402,6 +498,17 @@ export function OpsProvider({ children }) {
       markPaymentPaid,
       markReminderSent,
       saveProposal,
+      removeProposal,
+      saveVaultAccount,
+      removeVaultAccount,
+      saveInvoice,
+      removeInvoice,
+      markInvoicePaidRecord,
+      prepareInvoiceParasutRecord,
+      saveWhatsAppDraft,
+      removeWhatsAppDraft,
+      saveIntegrationNote,
+      removeIntegrationNote,
       exportJson,
       resetAll,
       resetDemo,

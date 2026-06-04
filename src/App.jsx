@@ -42,7 +42,7 @@ function AppMain({ onLogout }) {
         {screen === SCREENS.REPORTS && <ReportsView />}
         {screen === SCREENS.TEKLIF && <TeklifView />}
         {screen === SCREENS.SETTINGS && (
-          <SettingsView onNavigate={setScreen} />
+          <SettingsView />
         )}
       </AppShell>
       <DaydreamOperatorPanel />

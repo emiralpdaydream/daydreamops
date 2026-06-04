@@ -15,8 +15,9 @@ html[data-theme='day'] {
 
   --color-text: #171615;
   --color-text-secondary: #6f6961;
-  --color-text-muted: #9b948a;
+  --color-text-muted: #857d72;
   --color-text-soft: #6f6961;
+  --color-placeholder: #7a7368;
 
   --color-border: #ddd6cb;
   --color-border-subtle: #e8e2d8;
@@ -33,6 +34,16 @@ html[data-theme='day'] {
 
   --color-disabled-fg: rgba(23, 22, 21, 0.45);
   --color-btn-primary-disabled-fg: rgba(247, 243, 234, 0.85);
+
+  --color-status-connected-bg: #eef4eb;
+  --color-status-connected-border: #c5d4c0;
+  --color-status-connected-fg: #3d5238;
+  --color-status-preparing-bg: #faf6f0;
+  --color-status-preparing-border: #e8dfd0;
+  --color-status-preparing-fg: #7a5c38;
+  --color-status-off-bg: #f3f1ec;
+  --color-status-off-border: #e5dfd4;
+  --color-status-off-fg: #7a756c;
 }
 
 /* —— Gece —— */
@@ -46,8 +57,9 @@ html[data-theme='night'] {
 
   --color-text: #f7f3ea;
   --color-text-secondary: #c8c0b4;
-  --color-text-muted: #9f978e;
+  --color-text-muted: #b0a89e;
   --color-text-soft: #c8c0b4;
+  --color-placeholder: #9f978e;
 
   --color-border: #3a3632;
   --color-border-subtle: #322e2a;
@@ -59,6 +71,16 @@ html[data-theme='night'] {
 
   --color-disabled-fg: rgba(247, 243, 234, 0.45);
   --color-btn-primary-disabled-fg: rgba(247, 243, 234, 0.75);
+
+  --color-status-connected-bg: rgba(101, 123, 95, 0.18);
+  --color-status-connected-border: rgba(101, 123, 95, 0.35);
+  --color-status-connected-fg: #c8d4c4;
+  --color-status-preparing-bg: rgba(154, 123, 79, 0.15);
+  --color-status-preparing-border: rgba(154, 123, 79, 0.3);
+  --color-status-preparing-fg: #d4c4a8;
+  --color-status-off-bg: rgba(255, 255, 255, 0.06);
+  --color-status-off-border: rgba(255, 255, 255, 0.1);
+  --color-status-off-fg: #9f978e;
 }
 
 /* Koyu yüzeyler (Operator kartı, özet kartları) — tema bağımsız kontrast */

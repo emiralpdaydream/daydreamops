@@ -1,11 +1,14 @@
 import { useState } from 'react'
+import ConfirmModal from '../components/ConfirmModal'
+import { DELETE_CONFIRM_MESSAGE } from '../lib/confirmMessages'
 import { generateProposalText } from '../lib/proposalGenerator'
 import { useOps } from '../lib/useOps'
 import PageHeader from '../components/PageHeader'
 import { SCREEN_INTRO } from '../lib/screenManifesto'
 
 export default function TeklifView() {
-  const { saveProposal, createEmptyProposal } = useOps()
+  const { data, saveProposal, removeProposal, createEmptyProposal } = useOps()
+  const [confirmDelete, setConfirmDelete] = useState(null)
   const [form, setForm] = useState(() => {
     const p = createEmptyProposal()
     return {
@@ -157,6 +160,67 @@ export default function TeklifView() {
           </button>
         </div>
       </div>
+
+      {(data.proposals ?? []).length > 0 && (
+        <section className="panel-premium section-gap max-w-editorial p-6 md:p-8">
+          <h2 className="label-premium">Kayıtlı teklifler</h2>
+          <ul className="mt-4 space-y-3">
+            {data.proposals.map((p) => (
+              <li
+                key={p.id}
+                className="flex flex-col gap-2 border-b border-border py-3 last:border-0 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <div>
+                  <p className="font-medium text-text">{p.client_name}</p>
+                  <p className="text-xs text-dim">
+                    {p.project_type} · {p.date}
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    className="btn-outline"
+                    onClick={() => {
+                      setForm({
+                        ...p,
+                        deliverables: (p.deliverables ?? []).join('\n'),
+                      })
+                      setPreview(p.generated_text || '')
+                    }}
+                  >
+                    Düzenle
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-ghost"
+                    onClick={() =>
+                      setConfirmDelete({
+                        id: p.id,
+                        name: p.client_name,
+                      })
+                    }
+                  >
+                    Sil
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      <ConfirmModal
+        open={Boolean(confirmDelete)}
+        title="Teklifi sil"
+        message={DELETE_CONFIRM_MESSAGE}
+        confirmLabel="Sil"
+        danger
+        onConfirm={() => {
+          removeProposal(confirmDelete.id)
+          setConfirmDelete(null)
+        }}
+        onCancel={() => setConfirmDelete(null)}
+      />
     </main>
   )
 }

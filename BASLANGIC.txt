@@ -26,8 +26,11 @@ TEK SEFER (ilk kurulum)
 4. Kaydedin (Ctrl+S)
 
 Canlı site (Vercel):
-  npm run google:sync:prod   (veya değerleri elle kopyalayın)
-  Project → Settings → Environment Variables → Redeploy
+  npm run google:sync:prod
+  → vercel-google-env.txt oluşur (Vercel'e yapıştırın; .env.local değişmez)
+  Project → Settings → Environment Variables → Production → Redeploy
+
+  Kontrol: npm run env:check
 
 
 HER GÜN / BİLGİSAYAR YENİDEN AÇILINCA
@@ -52,6 +55,9 @@ AI ASISTAN & GMAIL
 
 SORUN OLURSA
 ------------
-- Canlıda AI: Vercel → OPENAI_API_KEY → redeploy
-- Gmail "OAuth eksik": npm run google:sync veya Vercel'de GOOGLE_* değişkenleri
+- Ortam özeti: npm run env:check  (yerel + canlı Google/OpenAI)
+- Yerel Gmail çalışmıyorsa: npm run google:sync  (localhost redirect'e döner)
+  .env.local içinde APP_URL veya REDIRECT vercel.app ise bu komutu çalıştırın
+- Canlıda AI: Vercel → OPENAI_API_KEY → redeploy  (yerelde OPENAI_API_KEY=... .env.local)
+- Canlı Gmail "OAuth eksik": vercel-google-env.txt → Vercel GOOGLE_* → redeploy
 - JSON veya secret sohbete yapıştırmayın; sızdıysa Google Console'dan yeni secret üretin

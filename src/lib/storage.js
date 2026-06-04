@@ -2,6 +2,7 @@ import { createId } from './id'
 import { PAYMENT_STATUS } from './constants'
 import { daysFromToday, todayKey } from './dates'
 import { ensureAccountingData } from './accountingStorage'
+import { ensureAppData } from './appDataStorage'
 import { ensureBriefData } from './briefStorage'
 import {
   applyLegacyClientName,
@@ -11,7 +12,7 @@ import { STORAGE_KEYS } from './storageKeys'
 
 const DATA_KEY = STORAGE_KEYS.DATA
 const ARCHIVE_DAYS = 30
-const DATA_VERSION = 6
+const DATA_VERSION = 7
 
 /** Seed kayıtları — isDemo bayrağı ile temizlenir */
 const DEMO_CLIENT_IDS = new Set([
@@ -73,6 +74,7 @@ function emptyDataShape() {
     proposals: [],
     briefs: [],
     brief: { date: key, tasks: [], notes: '' },
+    tasks: [],
     todos: [],
     daily_note: { date: key, text: '' },
     brands: [],
@@ -85,6 +87,10 @@ function emptyDataShape() {
       accounts: [],
       debts: [],
     },
+    vaultAccounts: [],
+    invoices: [],
+    whatsappDrafts: [],
+    integrationNotes: [],
     version: DATA_VERSION,
   }
 }
@@ -115,13 +121,14 @@ function normalizeData(parsed) {
     isDemo: false,
     ...b,
   }))
+  base.tasks = base.tasks ?? []
   base.todos = base.todos ?? []
   base.brands = base.brands ?? []
   base.future_projects = base.future_projects ?? []
   base.daily_note = base.daily_note ?? { date: todayKey(), text: '' }
   base.settings = base.settings ?? {}
   base.version = DATA_VERSION
-  return ensureAccountingData(ensureBriefData(base))
+  return ensureAppData(ensureAccountingData(ensureBriefData(base)))
 }
 
 function migrateData(parsed) {
@@ -339,6 +346,13 @@ export function clearPayments(data) {
 
 export function clearProposals(data) {
   return { ...data, proposals: [] }
+}
+
+export function deleteProposal(data, proposalId) {
+  return {
+    ...data,
+    proposals: (data.proposals ?? []).filter((p) => p.id !== proposalId),
+  }
 }
 
 export function clearBriefHistory(data) {

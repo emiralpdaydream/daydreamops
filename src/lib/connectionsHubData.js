@@ -1,76 +1,66 @@
-import { INTEGRATION_STATUS } from './constants'
+/** Bağlantılar Merkezi — durum listesi (entegrasyon yok, yalnızca gösterim) */
 
-/** Bağlantılar Merkezi kartları */
-export const HUB_MODULES = [
+export const CONNECTION_SERVICES = [
   {
     id: 'openai',
     title: 'OpenAI',
     glyph: 'AI',
-    purpose:
-      'Daydream Operator, teklif metni, rapor özeti, ödeme hatırlatma dili',
-    action: 'test-openai',
-    actionLabel: 'Bağlantıyı Test Et',
-    staticStatus: null,
+    purpose: 'Daydream Operator ve metin üretimi',
+    testable: true,
+  },
+  {
+    id: 'google',
+    title: 'Google',
+    glyph: 'GO',
+    purpose: 'OAuth ve Workspace ortam değişkenleri',
   },
   {
     id: 'drive',
-    title: 'Google Drive',
+    title: 'Drive',
     glyph: 'DR',
-    purpose: "Teklif PDF'leri, call sheet dosyaları, müşteri klasörleri",
-    action: 'open-drive',
-    actionLabel: 'Drive Alanını Aç',
-    googleOAuth: true,
+    purpose: 'Teklif PDF, call sheet, müşteri klasörleri',
   },
   {
     id: 'gmail',
     title: 'Gmail',
     glyph: 'GM',
-    purpose:
-      'Teklif mail taslakları, ödeme hatırlatma mailleri, müşteri iletişimi',
-    action: 'open-mail',
-    actionLabel: 'Mail Taslakları',
-    googleOAuth: true,
+    purpose: 'Teklif ve tahsilat mail taslakları',
   },
   {
     id: 'calendar',
-    title: 'Google Calendar',
+    title: 'Calendar',
     glyph: 'CL',
-    purpose: 'Çekimler, toplantılar, teslim tarihleri',
-    action: 'open-calendar',
-    actionLabel: 'Takvim Alanı',
-    googleOAuth: true,
+    purpose: 'Çekim, toplantı ve teslim tarihleri',
   },
   {
     id: 'sheets',
-    title: 'Google Sheets',
+    title: 'Sheets',
     glyph: 'SH',
-    purpose: 'Dış rapor, finans tablosu, müşteri listesi yedekleme',
-    action: 'open-reports',
-    actionLabel: 'Sheets Senkron',
-    googleOAuth: true,
-    staticStatus: INTEGRATION_STATUS.PREPARING,
+    purpose: 'Rapor ve finans tablosu yedekleme',
   },
   {
     id: 'gemini',
     title: 'Gemini',
     glyph: 'GE',
-    purpose: 'Alternatif Google AI analizi / veri yorumlama',
-    action: 'test-gemini',
-    actionLabel: 'Gemini Test',
-    staticStatus: INTEGRATION_STATUS.PREPARING,
+    purpose: 'Alternatif Google AI analizi',
   },
   {
-    id: 'supabase',
-    title: 'Supabase',
-    glyph: 'DB',
-    purpose: 'localStorage yerine kalıcı bulut veritabanı',
-    action: 'open-db-plan',
-    actionLabel: 'Veri Tabanı Planı',
-    staticStatus: INTEGRATION_STATUS.NEXT_PHASE,
+    id: 'whatsapp',
+    title: 'WhatsApp',
+    glyph: 'WA',
+    purpose: 'Hatırlatma ve takip (deep link — ileride)',
+  },
+  {
+    id: 'parasut',
+    title: 'Paraşüt',
+    glyph: 'PR',
+    purpose: 'Fatura ve muhasebe eşleştirme',
   },
 ]
 
-/** Drive Alanı — ileride Drive klasör ID'leri bağlanacak */
+/** @deprecated alt ekranlar — ileride kullanılabilir */
+export const HUB_MODULES = CONNECTION_SERVICES
+
 export const DRIVE_AREA_SECTIONS = [
   {
     id: 'teklifler',
@@ -110,7 +100,6 @@ export const DRIVE_AREA_SECTIONS = [
   },
 ]
 
-/** Mail Taslakları */
 export const MAIL_DRAFT_SECTIONS = [
   {
     id: 'odeme',
@@ -134,16 +123,12 @@ export const MAIL_DRAFT_SECTIONS = [
   },
 ]
 
-/** Takvim Alanı bölümleri */
 export const CALENDAR_AREA_SECTIONS = [
   { id: 'today', title: 'Bugünkü toplantılar' },
   { id: 'shoots', title: 'Yaklaşan çekimler' },
   { id: 'deliveries', title: 'Teslim tarihleri' },
   { id: 'reminders', title: 'Hatırlatmalar' },
 ]
-
-export const GEMINI_HUB_NOTE =
-  'Gemini API, Google ekosistemi içindeki alternatif analiz motoru olarak hazırlanıyor. Ana operatör OpenAI üzerinden çalışır.'
 
 export const SUPABASE_PLAN_NOTE =
   'Kalıcı bulut veritabanı hazırlandığında müşteri, tahsilat, brief ve teklif verileri cihazlar arası senkronlanacak. Şimdilik veriler yalnızca bu cihazda (localStorage).'

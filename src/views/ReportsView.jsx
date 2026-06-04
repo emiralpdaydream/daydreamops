@@ -1,5 +1,7 @@
+import CollectedNotesSection from '../components/CollectedNotesSection'
 import { useOps } from '../lib/useOps'
 import { formatTry } from '../lib/format'
+import { getTodayBriefRecord } from '../lib/briefSelectors'
 import { getExecutiveReport } from '../lib/reportSelectors'
 import { SCREEN_INTRO } from '../lib/screenManifesto'
 import BrandBackdrop from '../components/BrandBackdrop'
@@ -32,8 +34,15 @@ function BarRow({ label, pct }) {
 }
 
 export default function ReportsView() {
-  const { data } = useOps()
+  const {
+    data,
+    setBriefNotes,
+    appendBriefNote,
+    deleteCollectedNote,
+    updateCollectedNote,
+  } = useOps()
   const report = getExecutiveReport(data)
+  const brief = getTodayBriefRecord(data)
 
   if (!report.hasData) {
     return (
@@ -46,6 +55,19 @@ export default function ReportsView() {
           Henüz rapor oluşturacak veri yok. Müşteri, tahsilat ve brief kayıtları
           oluştukça burada özet görünür.
         </p>
+        <section className="report-section mt-10">
+          <h2 className="label-premium">Rapor notları</h2>
+          <div className="mt-4 panel-premium p-6">
+            <CollectedNotesSection
+              notes={brief.notes ?? ''}
+              onSaveNotes={setBriefNotes}
+              onAppendNote={appendBriefNote}
+              onDeleteNote={deleteCollectedNote}
+              onUpdateNote={updateCollectedNote}
+              compact
+            />
+          </div>
+        </section>
         <SheetsBackupSection />
       </main>
     )
@@ -90,6 +112,23 @@ export default function ReportsView() {
         <div className="report-bars mt-6">
           <BarRow label="Tahsil edilen pay" pct={collectedPct} />
           <BarRow label="Gecikmiş pay" pct={overduePct} />
+        </div>
+      </section>
+
+      <section className="report-section">
+        <h2 className="label-premium">Rapor notları</h2>
+        <p className="mt-2 max-w-editorial text-sm text-dim">
+          Brief ile paylaşılan günlük notlar — buradan da düzenleyebilir ve silebilirsiniz.
+        </p>
+        <div className="mt-4 panel-premium p-6">
+          <CollectedNotesSection
+            notes={brief.notes ?? ''}
+            onSaveNotes={setBriefNotes}
+            onAppendNote={appendBriefNote}
+            onDeleteNote={deleteCollectedNote}
+            onUpdateNote={updateCollectedNote}
+            compact
+          />
         </div>
       </section>
 

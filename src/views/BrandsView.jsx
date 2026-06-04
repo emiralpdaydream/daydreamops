@@ -1,7 +1,9 @@
 import { useState } from 'react'
+import ConfirmModal from '../components/ConfirmModal'
 import { useOps } from '../lib/useOps'
 import { SCREEN_INTRO } from '../lib/screenManifesto'
 import { formatDateTr } from '../lib/dates'
+import { DELETE_CONFIRM_MESSAGE } from '../lib/confirmMessages'
 import PageHeader from '../components/PageHeader'
 
 export default function BrandsView() {
@@ -13,6 +15,7 @@ export default function BrandsView() {
     createEmptyBrandProject,
   } = useOps()
   const [editing, setEditing] = useState(null)
+  const [confirmDelete, setConfirmDelete] = useState(null)
 
   function startNew() {
     setEditing(createEmptyBrand())
@@ -150,11 +153,7 @@ export default function BrandsView() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => {
-                      if (confirm(`${brand.name} silinsin mi?`)) {
-                        deleteBrand(brand.id)
-                      }
-                    }}
+                    onClick={() => setConfirmDelete({ id: brand.id, name: brand.name })}
                     className="btn-ghost"
                   >
                     Sil
@@ -181,6 +180,19 @@ export default function BrandsView() {
           ))
         )}
       </ul>
+
+      <ConfirmModal
+        open={Boolean(confirmDelete)}
+        title="Markayı sil"
+        message={DELETE_CONFIRM_MESSAGE}
+        confirmLabel="Sil"
+        danger
+        onConfirm={() => {
+          deleteBrand(confirmDelete.id)
+          setConfirmDelete(null)
+        }}
+        onCancel={() => setConfirmDelete(null)}
+      />
     </main>
   )
 }

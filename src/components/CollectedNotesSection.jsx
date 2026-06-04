@@ -1,17 +1,25 @@
 import { useState } from 'react'
+import ConfirmModal from './ConfirmModal'
+import RecordActionBar from './RecordActionBar'
+import { DELETE_CONFIRM_MESSAGE } from '../lib/confirmMessages'
 import { parseCollectedNotes } from '../lib/collectedNotesUtils'
 
 /**
- * ChatGPT tarzı alınan notlar — Brief ile aynı veri (brief.notes).
+ * Alınan notlar — Brief ile aynı veri (brief.notes).
  */
 export default function CollectedNotesSection({
   notes,
   onSaveNotes,
   onAppendNote,
+  onDeleteNote,
+  onUpdateNote,
   compact = false,
   showEditor = true,
 }) {
   const [draft, setDraft] = useState('')
+  const [editingId, setEditingId] = useState(null)
+  const [editText, setEditText] = useState('')
+  const [confirmDelete, setConfirmDelete] = useState(null)
   const entries = parseCollectedNotes(notes)
 
   function handleAdd(e) {
@@ -32,6 +40,18 @@ export default function CollectedNotesSection({
     setDraft('')
   }
 
+  function startEdit(entry) {
+    setEditingId(entry.id)
+    setEditText(entry.text)
+  }
+
+  function commitEdit(noteId) {
+    const t = editText.trim()
+    if (t && onUpdateNote) onUpdateNote(noteId, t)
+    setEditingId(null)
+    setEditText('')
+  }
+
   return (
     <div className={`collected-notes${compact ? ' collected-notes--compact' : ''}`}>
       <div className="collected-notes__list">
@@ -43,7 +63,39 @@ export default function CollectedNotesSection({
         ) : (
           entries.map((entry) => (
             <article key={entry.id} className="collected-notes__item">
-              <p>{entry.text}</p>
+              {editingId === entry.id ? (
+                <input
+                  className="input-premium collected-notes__edit-input"
+                  value={editText}
+                  onChange={(e) => setEditText(e.target.value)}
+                  onBlur={() => commitEdit(entry.id)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      commitEdit(entry.id)
+                    }
+                    if (e.key === 'Escape') setEditingId(null)
+                  }}
+                  autoFocus
+                  aria-label="Notu düzenle"
+                />
+              ) : (
+                <p className="collected-notes__item-text">{entry.text}</p>
+              )}
+              {(onUpdateNote || onDeleteNote) && editingId !== entry.id && (
+                <RecordActionBar
+                  onEdit={onUpdateNote ? () => startEdit(entry) : undefined}
+                  onDelete={
+                    onDeleteNote
+                      ? () =>
+                          setConfirmDelete({
+                            id: entry.id,
+                            preview: entry.text,
+                          })
+                      : undefined
+                  }
+                />
+              )}
             </article>
           ))
         )}
@@ -88,6 +140,19 @@ export default function CollectedNotesSection({
           />
         </details>
       )}
+
+      <ConfirmModal
+        open={Boolean(confirmDelete)}
+        title="Notu sil"
+        message={DELETE_CONFIRM_MESSAGE}
+        confirmLabel="Sil"
+        danger
+        onConfirm={() => {
+          onDeleteNote?.(confirmDelete.id)
+          setConfirmDelete(null)
+        }}
+        onCancel={() => setConfirmDelete(null)}
+      />
     </div>
   )
 }

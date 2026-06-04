@@ -19,6 +19,7 @@ dist-ssr
 !.env.example
 client_secret*.json
 *credentials*.json
+vercel-google-env.txt
 
 # Editor directories and files
 .vscode/*
@@ -32,3 +33,6 @@ client_secret*.json
 *.sw?
 
 _template-liqsquare/
+
+# Tema şablon arşivleri — repoya eklenmez
+*.zip

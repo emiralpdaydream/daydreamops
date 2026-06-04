@@ -1,11 +1,9 @@
+import { useState } from 'react'
 import { useOps } from '../lib/useOps'
 import { useMailDraft } from '../lib/useMailDraft'
 import { saveGmailDraft, testGmailConnection } from '../lib/gmailClient'
 import { useToast } from '../lib/useToast'
-
-function whatsAppUrl(text) {
-  return `https://wa.me/?text=${encodeURIComponent(text)}`
-}
+import WhatsAppMessageCard from './WhatsAppMessageCard'
 
 export default function ProposedActionBar({ action, onDone }) {
   const {
@@ -16,7 +14,10 @@ export default function ProposedActionBar({ action, onDone }) {
     saveExpense,
     saveProposal,
     createEmptyProposal,
+    saveWhatsAppDraft,
+    data,
   } = useOps()
+  const [waPhone, setWaPhone] = useState('')
   const { openPreview } = useMailDraft()
   const { showToast } = useToast()
 
@@ -109,29 +110,43 @@ export default function ProposedActionBar({ action, onDone }) {
   }
 
   if (action.type === 'message') {
+    const clientPhone =
+      action.phone ||
+      waPhone ||
+      (data.clients ?? []).find(
+        (c) =>
+          c.name &&
+          action.clientName &&
+          c.name.toLowerCase() === action.clientName.toLowerCase(),
+      )?.phone ||
+      ''
+
     return (
       <div className="operator-action-bar">
-        <p className="operator-action-preview">{action.text}</p>
-        <div className="operator-action-buttons">
-          <button
-            type="button"
-            className="btn-outline"
-            onClick={() => copyText(action.text)}
-          >
-            Kopyala
-          </button>
-          <a
-            href={whatsAppUrl(action.text)}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-outline"
-          >
-            WhatsApp&apos;a aktar
-          </a>
-          <button type="button" className="btn-ghost" onClick={onDone}>
-            Vazgeç
-          </button>
-        </div>
+        <label className="block mb-3">
+          <span className="label-premium text-xs">Telefon (opsiyonel)</span>
+          <input
+            className="input-premium mt-1 w-full"
+            value={clientPhone || waPhone}
+            onChange={(e) => setWaPhone(e.target.value)}
+            placeholder="5XX XXX XX XX"
+          />
+        </label>
+        <WhatsAppMessageCard
+          text={action.text}
+          phone={clientPhone || waPhone}
+          onDismiss={onDone}
+          onSaveDraft={(text) => {
+            saveWhatsAppDraft({
+              text,
+              phone: clientPhone || waPhone,
+              clientName: action.clientName || '',
+              purpose: action.purpose || 'agent',
+            })
+            showToast('WhatsApp taslağı kaydedildi.')
+            onDone?.()
+          }}
+        />
       </div>
     )
   }

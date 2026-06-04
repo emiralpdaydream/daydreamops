@@ -99,11 +99,29 @@ export function inferProposedAction(reply, proposedAction, lastUserMessage) {
     return { type: 'addTask', text: taskText }
   }
 
-  if (/hatırlatma|mesaj|whatsapp|mail|yazı|metin/i.test(lower)) {
+  if (
+    /hatırlatma|mesaj|whatsapp|yazı|metin/i.test(lower) &&
+    !/mail|e-posta/i.test(lower)
+  ) {
     const msg =
       extractQuoted(text) ||
       text.replace(/\s*onaylıyor musunuz\??\s*$/i, '').trim().slice(0, 2000)
-    return { type: 'message', text: msg, tone: 'nazik' }
+    const phoneMatch = String(lastUserMessage ?? '').match(
+      /(\+?90[\s-]?)?0?5\d{2}[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}/,
+    )
+    return {
+      type: 'message',
+      text: msg,
+      tone: 'nazik',
+      purpose: /ödeme|alacak|tahsilat/i.test(lower)
+        ? 'odeme'
+        : /teklif/i.test(lower)
+          ? 'teklif'
+          : /revize/i.test(lower)
+            ? 'revize'
+            : 'genel',
+      phone: phoneMatch ? phoneMatch[0].replace(/\D/g, '') : undefined,
+    }
   }
 
   return proposedAction ?? null

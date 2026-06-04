@@ -1,0 +1,160 @@
+/* Şirket kasası, görev satırı, WhatsApp önizleme */
+
+.vault-section__warn {
+  color: var(--signal-wine, #8a5a2a);
+  background: var(--surface-muted, #f5f2ec);
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  border: 1px solid var(--border, #e5dfd4);
+}
+
+.vault-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.vault-card {
+  border: 1px solid var(--border, #e5dfd4);
+  border-radius: 8px;
+  padding: 1rem 1.1rem;
+  background: var(--surface-elevated, #fff);
+}
+
+.vault-card__title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text, #1a1816);
+}
+
+.vault-card__meta {
+  font-size: 0.75rem;
+  color: var(--dim, #726d66);
+  margin-top: 0.25rem;
+}
+
+.vault-card__dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.25rem 0.75rem;
+  margin-top: 0.75rem;
+  font-size: 0.8125rem;
+}
+
+.vault-card__dl dt {
+  color: var(--dim, #726d66);
+}
+
+.vault-card__dl dd {
+  color: var(--text, #1a1816);
+  margin: 0;
+}
+
+.vault-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.vault-card__actions .btn-ghost,
+.task-row__action {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.5rem 0.75rem;
+}
+
+.brief-task-panel--compact .brief-task-panel__empty {
+  margin-top: 1rem;
+}
+
+.task-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border, #e5dfd4);
+}
+
+.task-row__status {
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--dim, #726d66);
+  flex-shrink: 0;
+}
+
+.task-row__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-left: auto;
+}
+
+.task-row__edit-input {
+  font-size: 16px;
+}
+
+.dashboard-accounting-card__cell--link {
+  cursor: pointer;
+  text-align: left;
+  border: none;
+  background: transparent;
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+
+.dashboard-accounting-card__cell--link:hover {
+  background: var(--surface-muted, rgba(0, 0, 0, 0.04));
+}
+
+.dashboard-accounting-card__quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.dashboard-accounting-card__quick-btn {
+  min-height: 44px;
+  font-size: 0.8125rem;
+}
+
+.whatsapp-preview-card {
+  padding: 1rem;
+  border: 1px solid var(--border, #e5dfd4);
+  border-radius: 8px;
+  background: var(--surface-elevated, #fff);
+}
+
+.whatsapp-preview-card__body {
+  color: var(--text, #1a1816);
+}
+
+.whatsapp-preview-card__actions .btn-primary,
+.whatsapp-preview-card__actions .btn-outline {
+  min-height: 44px;
+}
+
+.modal-panel--scroll {
+  max-height: min(90vh, 720px);
+  overflow-y: auto;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.invoice-vat-preview {
+  color: var(--text, #1a1816);
+}
+
+@media (max-width: 640px) {
+  .task-row__actions {
+    width: 100%;
+    margin-left: 0;
+  }
+}

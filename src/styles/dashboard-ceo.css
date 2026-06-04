@@ -1,0 +1,198 @@
+/* CEO Dashboard — kontrast token'ları */
+
+.page-main--dashboard-ceo {
+  padding-bottom: calc(var(--nav-total-height, 4.5rem) + 1rem);
+}
+
+.ceo-panel {
+  padding: 1.25rem 1.35rem;
+}
+
+.ceo-panel__title {
+  margin-bottom: 1rem;
+  color: var(--color-text, #171615);
+}
+
+.ceo-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .ceo-metrics-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.ceo-metric {
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--color-border, #ddd6cb);
+  border-radius: 10px;
+  background: var(--color-surface-elevated, #fff);
+}
+
+.ceo-metric__label {
+  display: block;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary, #6f6961);
+}
+
+.ceo-metric__value {
+  display: block;
+  margin-top: 0.35rem;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.75rem;
+  font-weight: 500;
+  line-height: 1.1;
+  color: var(--color-text, #171615);
+}
+
+.ceo-metric__hint {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.6875rem;
+  color: var(--color-text-muted, #9b948a);
+}
+
+.ceo-invoices-block {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border-subtle, #e8e2d8);
+}
+
+.ceo-invoices-block__label {
+  margin-bottom: 0.5rem;
+}
+
+.ceo-invoices-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ceo-invoices-list__item {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.35rem 1rem;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid var(--color-border-subtle, #e8e2d8);
+}
+
+.ceo-invoices-list__item:last-child {
+  border-bottom: none;
+}
+
+.ceo-invoices-list__party {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-text, #171615);
+}
+
+.ceo-invoices-list__meta {
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary, #6f6961);
+}
+
+.ceo-empty {
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--color-text-secondary, #6f6961);
+}
+
+.ceo-activity-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ceo-activity-list__item {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--color-border-subtle, #e8e2d8);
+}
+
+.ceo-activity-list__item:last-child {
+  border-bottom: none;
+}
+
+.ceo-activity-list__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  align-items: baseline;
+}
+
+.ceo-activity-list__type {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary, #6f6961);
+}
+
+.ceo-activity-list__time {
+  font-size: 0.75rem;
+  color: var(--color-text-muted, #9b948a);
+}
+
+.ceo-activity-list__detail {
+  margin-top: 0.35rem;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  color: var(--color-text, #171615);
+}
+
+.ceo-tasks-panel .brief-task-panel__empty {
+  color: var(--color-text-secondary, #6f6961);
+}
+
+.task-row__complete-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.task-row__complete-label {
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary, #6f6961);
+  min-width: 4.5rem;
+}
+
+html[data-theme='night'] .ceo-metric {
+  background: var(--color-surface-elevated, #252320);
+  border-color: var(--color-border, #3a3632);
+}
+
+html[data-theme='night'] .ceo-panel__title,
+html[data-theme='night'] .ceo-metric__value,
+html[data-theme='night'] .ceo-invoices-list__party,
+html[data-theme='night'] .ceo-activity-list__detail {
+  color: var(--color-text, #f7f3ea);
+}
+
+html[data-theme='night'] .ceo-metric__label,
+html[data-theme='night'] .ceo-metric__hint,
+html[data-theme='night'] .ceo-invoices-list__meta,
+html[data-theme='night'] .ceo-activity-list__type,
+html[data-theme='night'] .ceo-activity-list__time,
+html[data-theme='night'] .ceo-empty {
+  color: var(--color-text-secondary, #c8c0b4);
+}
+
+html[data-theme='night'] .dashboard-accounting-card {
+  background: var(--color-surface-elevated, #252320);
+}
+
+html[data-theme='night'] .dashboard-accounting-card__label {
+  color: var(--color-text-secondary, #c8c0b4);
+}
+
+html[data-theme='night'] .dashboard-accounting-card__value {
+  color: var(--color-text, #f7f3ea);
+}

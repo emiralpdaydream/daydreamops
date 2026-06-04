@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react'
 import ConfirmModal from '../components/ConfirmModal'
 import AccountingRecordModal from '../components/accounting/AccountingRecordModal'
+import InvoiceModal from '../components/invoices/InvoiceModal'
+import { consumeAccountingNavigation } from '../lib/accountingNavigation'
 import ReminderModal from '../components/ReminderModal'
 import PageHeader from '../components/PageHeader'
 import {
@@ -10,11 +12,17 @@ import {
   PAYABLE_STATUS_LABELS,
   RECEIVABLE_STATUS_LABELS,
 } from '../lib/accountingConstants'
+import {
+  INVOICE_STATUS_LABELS,
+  INVOICE_TYPE_LABELS,
+  PARASUT_STATUS_LABELS,
+} from '../lib/invoiceConstants'
 import { getAccounting, getAccountSourceTotals } from '../lib/accountingSelectors'
 import { formatTry } from '../lib/format'
 import { SCREEN_INTRO } from '../lib/screenManifesto'
 import { useOps } from '../lib/useOps'
 import { useToast } from '../lib/useToast'
+import { DELETE_CONFIRM_MESSAGE } from '../lib/confirmMessages'
 
 function StatusPill({ label, tone }) {
   return <span className={`accounting-pill accounting-pill--${tone}`}>{label}</span>
@@ -40,6 +48,10 @@ export default function AccountingView() {
     removePayable,
     saveExpense,
     removeExpense,
+    saveInvoice,
+    removeInvoice,
+    markInvoicePaidRecord,
+    prepareInvoiceParasutRecord,
     receiveReceivable,
     payPayable,
     deferPayableRecord,
@@ -47,10 +59,24 @@ export default function AccountingView() {
   } = useOps()
   const { showToast } = useToast()
 
-  const [tab, setTab] = useState(ACCOUNTING_TABS.RECEIVABLES)
-  const [modal, setModal] = useState(null)
+  const [initialNav] = useState(() => consumeAccountingNavigation())
+
+  const [tab, setTab] = useState(
+    initialNav?.tab || ACCOUNTING_TABS.RECEIVABLES,
+  )
+  const [modal, setModal] = useState(() => {
+    if (initialNav?.openModal === 'receivable') return { type: 'receivable' }
+    if (initialNav?.openModal === 'payable') return { type: 'payable' }
+    if (initialNav?.openModal === 'expense') return { type: 'expense' }
+    return null
+  })
+  const [invoiceModal, setInvoiceModal] = useState(() =>
+    initialNav?.openModal === 'invoice' ? { record: null, focusPdf: false } : null,
+  )
   const [confirm, setConfirm] = useState(null)
   const [reminder, setReminder] = useState(null)
+
+  const invoices = data.invoices ?? []
 
   const accounting = useMemo(() => getAccounting(data), [data])
   const accounts = useMemo(() => getAccountSourceTotals(data), [data])
@@ -77,6 +103,7 @@ export default function AccountingView() {
     { id: ACCOUNTING_TABS.RECEIVABLES, label: 'Alınacaklar' },
     { id: ACCOUNTING_TABS.PAYABLES, label: 'Ödenecekler' },
     { id: ACCOUNTING_TABS.EXPENSES, label: 'Harcamalar' },
+    { id: ACCOUNTING_TABS.INVOICES, label: 'Faturalar' },
     { id: ACCOUNTING_TABS.ACCOUNTS, label: 'Hesaplar' },
   ]
 
@@ -84,6 +111,7 @@ export default function AccountingView() {
     [ACCOUNTING_TABS.RECEIVABLES]: 'Yeni Alacak Ekle',
     [ACCOUNTING_TABS.PAYABLES]: 'Yeni Ödeme Ekle',
     [ACCOUNTING_TABS.EXPENSES]: 'Yeni Harcama Ekle',
+    [ACCOUNTING_TABS.INVOICES]: 'Yeni Fatura Ekle',
   }
 
   return (
@@ -109,7 +137,20 @@ export default function AccountingView() {
         <button
           type="button"
           className="accounting-add-cta"
-          onClick={() => setModal({ type: tab === ACCOUNTING_TABS.EXPENSES ? 'expense' : tab === ACCOUNTING_TABS.PAYABLES ? 'payable' : 'receivable' })}
+          onClick={() => {
+            if (tab === ACCOUNTING_TABS.INVOICES) {
+              setInvoiceModal({ record: null, focusPdf: false })
+            } else {
+              setModal({
+                type:
+                  tab === ACCOUNTING_TABS.EXPENSES
+                    ? 'expense'
+                    : tab === ACCOUNTING_TABS.PAYABLES
+                      ? 'payable'
+                      : 'receivable',
+              })
+            }
+          }}
         >
           {addLabels[tab]}
         </button>
@@ -188,7 +229,7 @@ export default function AccountingView() {
                     onClick={() =>
                       setConfirm({
                         title: 'Alacağı sil',
-                        message: 'Bu alınacak kaydını silmek istediğine emin misin?',
+                        message: DELETE_CONFIRM_MESSAGE,
                         onConfirm: () => {
                           removeReceivable(r.id)
                           showToast('Alacak kaydı silindi.')
@@ -270,7 +311,7 @@ export default function AccountingView() {
                     onClick={() =>
                       setConfirm({
                         title: 'Ödemeyi sil',
-                        message: 'Bu ödeme kaydını silmek istediğine emin misin?',
+                        message: DELETE_CONFIRM_MESSAGE,
                         onConfirm: () => {
                           removePayable(p.id)
                           showToast('Ödeme kaydı silindi.')
@@ -326,7 +367,7 @@ export default function AccountingView() {
                     onClick={() =>
                       setConfirm({
                         title: 'Harcamayı sil',
-                        message: 'Bu harcama kaydını silmek istediğine emin misin?',
+                        message: DELETE_CONFIRM_MESSAGE,
                         onConfirm: () => {
                           removeExpense(e.id)
                           showToast('Harcama kaydı silindi.')
@@ -352,6 +393,120 @@ export default function AccountingView() {
                   {e.isCompanyExpense ? ' · Şirket' : ' · Şahsi'}
                 </p>
                 {e.note && <p className="accounting-card__note">{e.note}</p>}
+              </RecordCard>
+            ))
+          )}
+        </section>
+      )}
+
+      {tab === ACCOUNTING_TABS.INVOICES && (
+        <section className="accounting-list">
+          {invoices.length === 0 ? (
+            <p className="accounting-empty">Henüz fatura kaydı yok.</p>
+          ) : (
+            invoices.map((inv) => (
+              <RecordCard
+                key={inv.id}
+                actions={[
+                  inv.status !== 'paid' && (
+                    <button
+                      key="paid"
+                      type="button"
+                      className="btn-primary btn-primary-inline accounting-action-btn"
+                      onClick={() => {
+                        markInvoicePaidRecord(inv.id)
+                        showToast('Fatura ödendi işaretlendi.')
+                      }}
+                    >
+                      Ödendi
+                    </button>
+                  ),
+                  <button
+                    key="parasut"
+                    type="button"
+                    className="btn-outline accounting-action-btn"
+                    onClick={() => {
+                      prepareInvoiceParasutRecord(inv.id)
+                      showToast(
+                        "Paraşüt'e hazırlanıyor (placeholder — gerçek gönderim yok).",
+                      )
+                    }}
+                  >
+                    Paraşüt&apos;e hazırla
+                  </button>,
+                  inv.pdfUrl ? (
+                    <a
+                      key="pdf"
+                      href={inv.pdfUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-outline accounting-action-btn"
+                    >
+                      PDF
+                    </a>
+                  ) : (
+                    <button
+                      key="pdf-add"
+                      type="button"
+                      className="btn-outline accounting-action-btn"
+                      onClick={() =>
+                        setInvoiceModal({ record: inv, focusPdf: true })
+                      }
+                    >
+                      PDF ekle
+                    </button>
+                  ),
+                  <button
+                    key="edit"
+                    type="button"
+                    className="btn-outline accounting-action-btn"
+                    onClick={() =>
+                      setInvoiceModal({ record: inv, focusPdf: false })
+                    }
+                  >
+                    Düzenle
+                  </button>,
+                  <button
+                    key="del"
+                    type="button"
+                    className="btn-ghost accounting-action-btn"
+                    onClick={() =>
+                      setConfirm({
+                        title: 'Faturayı sil',
+                        message: DELETE_CONFIRM_MESSAGE,
+                        onConfirm: () => {
+                          removeInvoice(inv.id)
+                          showToast('Fatura silindi.')
+                          setConfirm(null)
+                        },
+                      })
+                    }
+                  >
+                    Sil
+                  </button>,
+                ].filter(Boolean)}
+              >
+                <div className="accounting-card__top">
+                  <h3 className="accounting-card__title">{inv.partyName}</h3>
+                  <StatusPill
+                    label={INVOICE_STATUS_LABELS[inv.status] || inv.status}
+                    tone={inv.status === 'overdue' ? 'urgent' : 'default'}
+                  />
+                </div>
+                <p className="accounting-card__amount">
+                  Toplam {formatTry(inv.totalAmount)} ·{' '}
+                  {INVOICE_TYPE_LABELS[inv.invoiceType]}
+                </p>
+                <p className="accounting-card__meta">
+                  Matrah {formatTry(inv.amount)} · KDV %{inv.vatRate} (
+                  {formatTry(inv.vatAmount)}) · No: {inv.invoiceNo || '—'}
+                </p>
+                <p className="accounting-card__meta">
+                  Kesim: {inv.issueDate || '—'} · Vade: {inv.dueDate || '—'} ·{' '}
+                  {INVOICE_STATUS_LABELS[inv.status]} ·{' '}
+                  {PARASUT_STATUS_LABELS[inv.parasutStatus]}
+                </p>
+                {inv.note && <p className="accounting-card__note">{inv.note}</p>}
               </RecordCard>
             ))
           )}
@@ -417,6 +572,19 @@ export default function AccountingView() {
         record={modal?.record}
         onSave={handleSave}
         onClose={closeModal}
+      />
+
+      <InvoiceModal
+        key={`${invoiceModal?.record?.id ?? 'new-invoice'}-${invoiceModal?.focusPdf ? 'pdf' : 'form'}`}
+        open={Boolean(invoiceModal)}
+        record={invoiceModal?.record}
+        focusPdf={Boolean(invoiceModal?.focusPdf)}
+        onSave={(payload) => {
+          saveInvoice(payload, invoiceModal?.record?.id)
+          showToast(invoiceModal?.record ? 'Fatura güncellendi.' : 'Fatura eklendi.')
+          setInvoiceModal(null)
+        }}
+        onClose={() => setInvoiceModal(null)}
       />
 
       <ConfirmModal

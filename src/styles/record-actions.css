@@ -1,0 +1,81 @@
+.record-action-bar {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-left: auto;
+}
+
+.record-action-bar__btn {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.45rem 0.85rem;
+  border-radius: 8px;
+  font-family: Inter, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.record-action-bar__btn--edit {
+  border: 1px solid var(--color-border, #ddd6cb);
+  background: var(--color-surface-elevated, #fff);
+  color: var(--color-text, #171615);
+}
+
+.record-action-bar__btn--edit:hover {
+  border-color: var(--color-burgundy, #7a1028);
+  color: var(--color-burgundy, #7a1028);
+}
+
+.record-action-bar__btn--delete {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--color-text-secondary, #6f6961);
+}
+
+.record-action-bar__btn--delete:hover {
+  color: #8a2a2a;
+  background: rgba(122, 16, 40, 0.08);
+}
+
+.accounting-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.collected-notes__item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--color-border-subtle, #e8e2d8);
+}
+
+.collected-notes__item:last-child {
+  border-bottom: none;
+}
+
+.collected-notes__item-text {
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--color-text, #171615);
+}
+
+.collected-notes__edit-input {
+  width: 100%;
+  font-size: 16px;
+}
+
+html[data-theme='night'] .record-action-bar__btn--edit {
+  background: var(--color-surface-elevated, #252320);
+  border-color: var(--color-border, #3a3632);
+  color: var(--color-text, #f7f3ea);
+}
+
+html[data-theme='night'] .collected-notes__item-text {
+  color: var(--color-text, #f7f3ea);
+}
